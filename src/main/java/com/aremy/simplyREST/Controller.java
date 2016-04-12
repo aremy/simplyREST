@@ -50,46 +50,18 @@ public class Controller {
         String targetHttpMethod = (String) httpMethod.getValue();
 
 
-        CloseableHttpClient httpclient = HttpClients.createDefault();
-
-    /*    switch (targetHttpMethod) {
+        String targetHttpAnswer = "";
+        switch (targetHttpMethod) {
             case "GET":
-                ;
+                targetHttpAnswer = triggerHttpGet(targetUrl, targetHttpHeader);
+                break;
             case "POST":
-                ;
+                break;
             default:
-                ;
+                break;
 
-        }*/
-
-            HttpGet httpGet = new HttpGet(targetUrl);
-            CloseableHttpResponse response1 = null;
-            try {
-                response1 = httpclient.execute(httpGet);
-            } catch (IOException e) {
-                result = "Error:" + e.getMessage();
-            }
-            try {
-                System.out.println(response1.getStatusLine());
-                HttpEntity entity1 = response1.getEntity();
-
-
-
-                StringWriter writer = new StringWriter();
-                IOUtils.copy(entity1.getContent(), writer, getCharsetFromContentType(response1.getFirstHeader("Content-Type").getValue()));
-                httpAnswer.setText(writer.toString());
-                // do something useful with the response body
-                // and ensure it is fully consumed
-                EntityUtils.consume(entity1);
-            } catch (IOException e) {
-                e.printStackTrace();
-            } finally {
-                try {
-                    response1.close();
-                } catch (IOException e) {
-                    e.printStackTrace();
-                }
-            }
+        }
+        httpAnswer.setText(targetHttpAnswer);
 /*
         /// POST
         HttpPost httpPost = new HttpPost(targetUrl);
@@ -121,6 +93,32 @@ public class Controller {
 */
 
 
+    }
+
+    private String triggerHttpGet(String targetUrl, String targetHttpHeader) {
+        String result;
+        CloseableHttpClient httpclient = HttpClients.createDefault();
+        HttpGet httpGet = new HttpGet(targetUrl);
+        CloseableHttpResponse response1 = null;
+        try {
+            response1 = httpclient.execute(httpGet);
+            System.out.println(response1.getStatusLine());
+            HttpEntity entity1 = response1.getEntity();
+
+            StringWriter writer = new StringWriter();
+            IOUtils.copy(entity1.getContent(), writer, getCharsetFromContentType(response1.getFirstHeader("Content-Type").getValue()));
+            result = writer.toString();
+            EntityUtils.consume(entity1);
+        } catch (IOException e) {
+            result = "Error:" + e.getMessage();
+        } finally {
+            try {
+                response1.close();
+            } catch (IOException e) {
+                result = "Error:" + e.getMessage();
+            }
+        }
+        return result;
     }
 
     private String getCharsetFromContentType(String contentType) {
