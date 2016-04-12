@@ -10,10 +10,20 @@ public class Main extends Application {
 
     @Override
     public void start(Stage primaryStage) throws Exception{
-        Parent root = FXMLLoader.load(getClass().getResource("/sample.fxml"));
-        primaryStage.setTitle("Hello World");
-        primaryStage.setScene(new Scene(root, 300, 275));
+        FXMLLoader loader = new FXMLLoader(getClass().getResource("/sample.fxml"));
+        Parent root = loader.load();
+
+        //Parent root = FXMLLoader.load(getClass().getResource("/sample.fxml"));
+
+//        HttpMethodChoiceController httpMethodChoiceController = loader.getController();
+
+
+        primaryStage.setTitle("simplyREST");
+        primaryStage.setScene(new Scene(root, 800, 600));
         primaryStage.show();
+
+ //       httpMethodChoiceController.setData();
+
     }
 
 
