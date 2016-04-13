@@ -1,5 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
+<?import javafx.scene.shape.*?>
+<?import javafx.geometry.*?>
 <?import javafx.collections.*?>
 <?import javafx.scene.control.*?>
 <?import java.lang.*?>
@@ -11,62 +13,52 @@
 <?import javafx.collections.ObservableList?>
 <?import javafx.collections.FXCollections?>
 
-<GridPane alignment="center" hgap="10" vgap="10" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.aremy.simplyREST.Controller">
-   <columnConstraints>
-      <ColumnConstraints />
-      <ColumnConstraints />
-   </columnConstraints>
-   <rowConstraints>
-      <RowConstraints />
-      <RowConstraints />
-      <RowConstraints />
-      <RowConstraints />
-   </rowConstraints>
+<AnchorPane prefHeight="600.0" prefWidth="800.0" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.aremy.simplyREST.Controller">
    <children>
-      <Pane prefHeight="600.0" prefWidth="800.0">
-         <children>
-            <MenuBar prefHeight="25.0" prefWidth="810.0">
-              <menus>
-                <Menu mnemonicParsing="false" text="File">
-                  <items>
-                    <MenuItem mnemonicParsing="false" onAction="#exitSuccess" text="Close" />
-                  </items>
-                </Menu>
-                <Menu mnemonicParsing="false" text="Edit">
-                  <items>
-                    <MenuItem mnemonicParsing="false" text="Delete" />
-                  </items>
-                </Menu>
-                <Menu mnemonicParsing="false" text="Help">
-                  <items>
-                    <MenuItem mnemonicParsing="false" text="About" />
-                  </items>
-                </Menu>
-              </menus>
-            </MenuBar>
-            <TextField fx:id="url" layoutX="34.0" layoutY="58.0" prefHeight="25.0" prefWidth="378.0" promptText="url" />
-            <TextArea fx:id="httpHeader" layoutX="34.0" layoutY="89.0" onKeyPressed="#filterTab" prefHeight="156.0" prefWidth="378.0" promptText="HTTP Headers" />
-            <ChoiceBox fx:id="httpMethod" layoutX="416.0" layoutY="58.0" prefHeight="25.0" prefWidth="80.0">
-                <items>
-                <FXCollections fx:factory="observableArrayList">
-                    <String fx:value="GET" />
-                    <String fx:value="POST" />
-                    <String fx:value="PUT" />
-                    <String fx:value="DELETE" />
-                </FXCollections>
-                </items>
-                <value>
-                    <String fx:value="GET" />
-                </value>
-            </ChoiceBox>
-            <Button layoutX="509.0" layoutY="58.0" mnemonicParsing="false" onAction="#triggerApiCall" prefHeight="25.0" prefWidth="53.0" text="Go" />
-            <TextArea fx:id="httpAnswer" layoutX="34.0" layoutY="255.0" onKeyPressed="#filterTab" prefHeight="340.0" prefWidth="378.0" promptText="HTTP Answer Code/Header/Payload" />
-            <Button layoutX="422.0" layoutY="528.0" mnemonicParsing="false" prefHeight="25.0" prefWidth="149.0" text="view in default editor" />
-            <Button layoutX="422.0" layoutY="553.0" mnemonicParsing="false" prefHeight="25.0" prefWidth="149.0" text="open with..." />
-            <Button layoutX="422.0" layoutY="503.0" mnemonicParsing="false" prefHeight="25.0" prefWidth="149.0" text="save" />
-            <Button layoutX="416.0" layoutY="107.0" mnemonicParsing="false" prefHeight="25.0" prefWidth="171.0" text="common headers and value" />
-            <Button layoutX="416.0" layoutY="132.0" mnemonicParsing="false" prefHeight="25.0" prefWidth="171.0" text="base64 encode/decode tool" />
-         </children>
-      </Pane>
+      <MenuBar AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0">
+        <menus>
+          <Menu mnemonicParsing="false" text="File">
+            <items>
+              <MenuItem mnemonicParsing="false" onAction="#exitSuccess" text="Close" />
+            </items>
+          </Menu>
+          <Menu mnemonicParsing="false" text="Edit">
+            <items>
+              <MenuItem mnemonicParsing="false" text="Delete" />
+            </items>
+          </Menu>
+          <Menu mnemonicParsing="false" text="Help">
+            <items>
+              <MenuItem mnemonicParsing="false" text="About" />
+            </items>
+          </Menu>
+        </menus>
+      </MenuBar>
+      <TextField fx:id="url" prefHeight="25.0" prefWidth="390.0" promptText="url" AnchorPane.leftAnchor="10.0" AnchorPane.topAnchor="25.0" />
+      <TextArea fx:id="httpHeader" layoutX="13.0" layoutY="56.0" onKeyPressed="#filterTab" prefHeight="156.0" prefWidth="390.0" promptText="HTTP Headers" AnchorPane.leftAnchor="10.0" />
+      <ChoiceBox fx:id="httpMethod" layoutX="438.0" layoutY="28.0" prefHeight="25.0" prefWidth="80.0">
+          <items>
+          <FXCollections fx:factory="observableArrayList">
+              <String fx:value="GET" />
+              <String fx:value="POST" />
+              <String fx:value="PUT" />
+              <String fx:value="DELETE" />
+          </FXCollections>
+          </items>
+          <value>
+              <String fx:value="GET" />
+          </value>
+      </ChoiceBox>
+      <Button layoutX="726.0" layoutY="28.0" mnemonicParsing="false" onAction="#triggerApiCall" prefHeight="25.0" prefWidth="53.0" text="Go" AnchorPane.rightAnchor="10.0" />
+      <TextField fx:id="httpReturnCode" editable="false" focusTraversable="false" layoutX="10.0" layoutY="229.0" prefHeight="25.0" prefWidth="390.0" promptText="HTTP Answer Code" AnchorPane.leftAnchor="10.0" AnchorPane.rightAnchor="400.0" />
+      <TextArea fx:id="httpAnswerBody" editable="false" focusTraversable="false" layoutX="19.0" layoutY="333.0" onKeyPressed="#filterTab" prefHeight="213.0" prefWidth="390.0" promptText="HTTP Answer Payload" AnchorPane.leftAnchor="10.0" AnchorPane.rightAnchor="400.0" />
+      <Button layoutX="451.0" layoutY="512.0" mnemonicParsing="false" prefHeight="25.0" prefWidth="149.0" text="view in default editor" />
+      <Button layoutX="451.0" layoutY="447.0" mnemonicParsing="false" prefHeight="25.0" prefWidth="149.0" text="open with..." />
+      <Button layoutX="451.0" layoutY="480.0" mnemonicParsing="false" prefHeight="25.0" prefWidth="149.0" text="save" />
+      <Button layoutX="451.0" layoutY="122.0" mnemonicParsing="false" prefHeight="25.0" prefWidth="171.0" text="common headers and value" />
+      <Button layoutX="451.0" layoutY="149.0" mnemonicParsing="false" prefHeight="25.0" prefWidth="171.0" text="base64 encode/decode tool" />
+      <ProgressIndicator fx:id="downloadProgress" layoutX="522.0" layoutY="21.0" progress="0.0" visible="false" />
+      <Accordion />
+      <TextArea fx:id="httpAnswerHeaders" editable="false" focusTraversable="false" layoutX="10.0" layoutY="259.0" onKeyPressed="#filterTab" prefHeight="70.0" prefWidth="390.0" promptText="HTTP Answer Headers" />
    </children>
-</GridPane>
+</AnchorPane>

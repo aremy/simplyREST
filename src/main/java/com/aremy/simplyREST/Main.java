@@ -12,12 +12,6 @@ public class Main extends Application {
     public void start(Stage primaryStage) throws Exception{
         FXMLLoader loader = new FXMLLoader(getClass().getResource("/sample.fxml"));
         Parent root = loader.load();
-
-        //Parent root = FXMLLoader.load(getClass().getResource("/sample.fxml"));
-
-//        HttpMethodChoiceController httpMethodChoiceController = loader.getController();
-
-
         primaryStage.setTitle("simplyREST");
         primaryStage.setScene(new Scene(root, 800, 600));
         primaryStage.show();
