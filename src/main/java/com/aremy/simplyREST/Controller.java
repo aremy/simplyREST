@@ -70,6 +70,12 @@ public class Controller {
             case "POST":
                 targetHttpAnswer = triggerHttpPost(targetUrl, targetHttpHeader);
                 break;
+            case "PUT":
+                //targetHttpAnswer = triggerHttpPost(targetUrl, targetHttpHeader);
+                break;
+            case "DELETE":
+                //targetHttpAnswer = triggerHttpPost(targetUrl, targetHttpHeader);
+                break;
             default:
                 break;
 
