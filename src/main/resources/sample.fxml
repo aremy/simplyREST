@@ -13,7 +13,7 @@
 <?import javafx.collections.ObservableList?>
 <?import javafx.collections.FXCollections?>
 
-<GridPane prefHeight="600.0" prefWidth="800.0" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.aremy.simplyREST.Controller">
+<GridPane fx:id="rootPane" prefHeight="600.0" prefWidth="800.0" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.aremy.simplyREST.Controller">
    <columnConstraints>
       <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" />
       <ColumnConstraints hgrow="SOMETIMES" maxWidth="200.0" minWidth="200.0" prefWidth="200.0" />
@@ -30,7 +30,7 @@
    <children>
       <VBox alignment="CENTER" GridPane.columnIndex="1" GridPane.rowIndex="2">
          <children>
-            <Button mnemonicParsing="false" prefHeight="25.0" prefWidth="171.0" text="base64 encode/decode tool" VBox.vgrow="ALWAYS">
+            <Button mnemonicParsing="false" onAction="#openBase64EncodeDecode" prefHeight="25.0" prefWidth="171.0" text="base64 encode/decode tool" VBox.vgrow="ALWAYS">
                <VBox.margin>
                   <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
                </VBox.margin>

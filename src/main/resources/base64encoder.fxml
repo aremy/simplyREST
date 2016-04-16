@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.text.*?>
+<?import javafx.scene.control.*?>
+<?import java.lang.*?>
+<?import javafx.scene.layout.*?>
+
+
+<Pane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="163.0" prefWidth="405.0" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.aremy.simplyREST.Base64encoderController">
+   <children>
+      <Button layoutX="329.0" layoutY="39.0" mnemonicParsing="false" onAction="#base64encode" text="encode" />
+      <Button layoutX="328.0" layoutY="79.0" mnemonicParsing="false" onAction="#base64decode" text="decode" />
+      <TextField fx:id="usernameToEncode" layoutX="14.0" layoutY="39.0" promptText="username" />
+      <TextField fx:id="passwordToEncode" layoutX="168.0" layoutY="39.0" promptText="password" />
+      <TextField fx:id="base64encodedstringToDecode" layoutX="14.0" layoutY="79.0" prefHeight="25.0" prefWidth="301.0" promptText="base64-encoded username:password" />
+      <Button layoutX="98.0" layoutY="113.0" mnemonicParsing="false" prefHeight="25.0" prefWidth="169.0" text="Set in Authorization header" />
+   </children>
+</Pane>
