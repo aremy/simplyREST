@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.*?>
+<?import java.lang.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.layout.GridPane?>
+
+
+<GridPane xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.aremy.simplyREST.HeadersController">
+   <columnConstraints>
+      <ColumnConstraints />
+   </columnConstraints>
+   <rowConstraints>
+      <RowConstraints />
+      <RowConstraints />
+   </rowConstraints>
+   <children>
+      <TreeTableView fx:id="commonHeadersTable">
+        <columns>
+          <TreeTableColumn fx:id="headerColumn" minWidth="15.0" prefWidth="100.0" text="Header" />
+          <TreeTableColumn fx:id="descriptionColumn" prefWidth="120.0" text="Description" />
+            <TreeTableColumn fx:id="exampleColumn" prefWidth="95.0" text="Example" />
+        </columns>
+      </TreeTableView>
+      <Hyperlink onAction="#goToHeaderSource" text="From Wikipedia" GridPane.halignment="RIGHT" GridPane.rowIndex="1" />
+   </children>
+</GridPane>

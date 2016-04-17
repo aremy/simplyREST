@@ -1,18 +1,53 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
+<?import javafx.geometry.*?>
 <?import javafx.scene.text.*?>
 <?import javafx.scene.control.*?>
 <?import java.lang.*?>
 <?import javafx.scene.layout.*?>
 
 
-<Pane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="163.0" prefWidth="405.0" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.aremy.simplyREST.Base64encoderController">
+<GridPane xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.aremy.simplyREST.Base64encoderController">
+   <columnConstraints>
+      <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" />
+      <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" />
+      <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" />
+   </columnConstraints>
+   <rowConstraints>
+      <RowConstraints minHeight="10.0" vgrow="SOMETIMES" />
+      <RowConstraints minHeight="10.0" vgrow="SOMETIMES" />
+      <RowConstraints minHeight="10.0" vgrow="SOMETIMES" />
+   </rowConstraints>
    <children>
-      <Button layoutX="329.0" layoutY="39.0" mnemonicParsing="false" onAction="#base64encode" text="encode" />
-      <Button layoutX="328.0" layoutY="79.0" mnemonicParsing="false" onAction="#base64decode" text="decode" />
-      <TextField fx:id="usernameToEncode" layoutX="14.0" layoutY="39.0" promptText="username" />
-      <TextField fx:id="passwordToEncode" layoutX="168.0" layoutY="39.0" promptText="password" />
-      <TextField fx:id="base64encodedstringToDecode" layoutX="14.0" layoutY="79.0" prefHeight="25.0" prefWidth="301.0" promptText="base64-encoded username:password" />
-      <Button layoutX="98.0" layoutY="113.0" mnemonicParsing="false" prefHeight="25.0" prefWidth="169.0" text="Set in Authorization header" />
+      <Button layoutX="98.0" layoutY="113.0" mnemonicParsing="false" onAction="#setBase64encodedstring" prefHeight="25.0" prefWidth="169.0" text="Set in Authorization header" GridPane.columnSpan="3" GridPane.halignment="CENTER" GridPane.rowIndex="2">
+         <GridPane.margin>
+            <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
+         </GridPane.margin>
+      </Button>
+      <TextField fx:id="usernameToEncode" layoutX="14.0" layoutY="39.0" promptText="username">
+         <GridPane.margin>
+            <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
+         </GridPane.margin>
+      </TextField>
+      <TextField fx:id="passwordToEncode" layoutX="168.0" layoutY="39.0" promptText="password" GridPane.columnIndex="1">
+         <GridPane.margin>
+            <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
+         </GridPane.margin>
+      </TextField>
+      <Button layoutX="328.0" layoutY="79.0" mnemonicParsing="false" onAction="#base64decode" text="decode" GridPane.columnIndex="2" GridPane.rowIndex="1">
+         <GridPane.margin>
+            <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
+         </GridPane.margin>
+      </Button>
+      <TextField fx:id="base64encodedstringToDecode" layoutX="14.0" layoutY="79.0" prefHeight="25.0" prefWidth="301.0" promptText="base64-encoded username:password" GridPane.columnSpan="2" GridPane.rowIndex="1">
+         <GridPane.margin>
+            <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
+         </GridPane.margin>
+      </TextField>
+      <Button layoutX="329.0" layoutY="39.0" mnemonicParsing="false" onAction="#base64encode" text="encode" GridPane.columnIndex="2">
+         <GridPane.margin>
+            <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
+         </GridPane.margin>
+      </Button>
    </children>
-</Pane>
+</GridPane>
