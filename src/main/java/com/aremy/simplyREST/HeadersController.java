@@ -100,6 +100,8 @@ public class HeadersController extends HeaderManagerController {
         Collection<CommonHeader> extractedCommonHeaders = getCommonHeadersFromXml();
         final TreeItem<CommonHeader> root = new TreeItem<>(new CommonHeader("Common Headers", "",""));
         root.setExpanded(true);
+
+        //Adding tree items to the root
         for (CommonHeader extractedCommonHeader: extractedCommonHeaders) {
             final TreeItem<CommonHeader> childNode = new TreeItem<>(extractedCommonHeader);
             root.getChildren().add(childNode);
@@ -107,7 +109,6 @@ public class HeadersController extends HeaderManagerController {
         headerColumn.setCellValueFactory(new TreeItemPropertyValueFactory("name"));
         descriptionColumn.setCellValueFactory(new TreeItemPropertyValueFactory("description"));
         exampleColumn.setCellValueFactory(new TreeItemPropertyValueFactory("example"));
-
         commonHeadersTable.setRoot(root);
         commonHeadersTable.getSelectionModel().setSelectionMode(SelectionMode.MULTIPLE);
     }
@@ -124,11 +125,8 @@ public class HeadersController extends HeaderManagerController {
     @FXML
     public void addSelectedHeaders () {
         final ObservableList<TreeItem<CommonHeader>> selectedItems = commonHeadersTable.getSelectionModel().getSelectedItems();
-
         for (TreeItem<CommonHeader> treeitem: selectedItems) {
             setHeaderForm(treeitem.getValue().getExample());
         }
-
     }
-
 }
