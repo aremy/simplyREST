@@ -1,19 +1,30 @@
 package com.aremy.simplyREST;
 
-import javafx.beans.property.StringProperty;
+import com.sun.javafx.application.HostServicesDelegate;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
+import javafx.scene.control.SelectionMode;
 import javafx.scene.control.TreeItem;
 import javafx.scene.control.TreeTableColumn;
 import javafx.scene.control.TreeTableView;
 import javafx.scene.control.cell.TreeItemPropertyValueFactory;
 import javafx.stage.Stage;
+import org.w3c.dom.Document;
+import org.w3c.dom.Element;
+import org.w3c.dom.Node;
+import org.w3c.dom.NodeList;
+import org.xml.sax.SAXException;
 
+import javax.xml.parsers.DocumentBuilder;
+import javax.xml.parsers.DocumentBuilderFactory;
+import javax.xml.parsers.ParserConfigurationException;
+import java.io.*;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 
-public class HeadersController {
+public class HeadersController extends HeaderManagerController {
     @FXML private TreeTableView<CommonHeader> commonHeadersTable;
     @FXML private TreeTableColumn headerColumn;
     @FXML private TreeTableColumn descriptionColumn;
@@ -22,7 +33,7 @@ public class HeadersController {
     private Stage dialogStage;
 
     public void goToHeaderSource() {
-        // https://en.wikipedia.org/wiki/List_of_HTTP_header_fields
+        //String url = "https://en.wikipedia.org/wiki/List_of_HTTP_header_fields";
     }
 
     public class CommonHeader {
@@ -36,74 +47,88 @@ public class HeadersController {
             this.example = example;
         }
 
-
         public String getName() {
             return name;
         }
-
         public String getDescription() {
             return description;
         }
-
         public String getExample() {
             return example;
         }
     }
+
+
+    protected ArrayList<CommonHeader> getCommonHeadersFromXml() {
+        ArrayList<CommonHeader> commonHeadersFromXml = new ArrayList<>();
+        DocumentBuilderFactory factory =
+                DocumentBuilderFactory.newInstance();
+
+        DocumentBuilder builder = null;
+        try {
+            builder = factory.newDocumentBuilder();
+
+            ClassLoader classLoader = getClass().getClassLoader();
+            File file = new File(classLoader.getResource("headers.xml").getFile());
+
+            Document doc = builder.parse(file);
+            NodeList nList = doc.getElementsByTagName("header");
+            for (int temp = 0; temp < nList.getLength(); temp++) {
+                Node nNode = nList.item(temp);
+                if (nNode.getNodeType() == Node.ELEMENT_NODE) {
+
+                    Element eElement = (Element) nNode;
+                    commonHeadersFromXml.add(new CommonHeader(eElement.getElementsByTagName("name").item(0).getTextContent(),
+                    eElement.getElementsByTagName("description").item(0).getTextContent(),
+                    eElement.getElementsByTagName("example").item(0).getTextContent()));
+                }
+            }
+        } catch (ParserConfigurationException e) {
+            e.printStackTrace();
+        } catch (UnsupportedEncodingException e) {
+            e.printStackTrace();
+        } catch (IOException e) {
+            e.printStackTrace();
+        } catch (SAXException e) {
+            e.printStackTrace();
+        }
+        return commonHeadersFromXml;
+    }
+
     @FXML
     public void initialize() {
-        //Creating tree items
-        List<CommonHeader> list = new ArrayList<>();
-        list.add(new CommonHeader("A", "B", "C"));
-        list.add(new CommonHeader("A1", "B1", "C1"));
-        list.add(new CommonHeader("A2", "B2", "C2"));
-        ObservableList<CommonHeader> teams = FXCollections.observableArrayList();
-
-
-
-        final TreeItem<CommonHeader> childNode1 = new TreeItem<>(new CommonHeader("Child Node 1", "x","y"));
-        final TreeItem<CommonHeader> childNode2 = new TreeItem<>(new CommonHeader("Child Node 2", "x","y"));
-        final TreeItem<CommonHeader> childNode3 = new TreeItem<>(new CommonHeader("Child Node 3", "x","y"));
-
-        //Creating the root element
+        Collection<CommonHeader> extractedCommonHeaders = getCommonHeadersFromXml();
         final TreeItem<CommonHeader> root = new TreeItem<>(new CommonHeader("Common Headers", "",""));
         root.setExpanded(true);
-
-        //Adding tree items to the root
-        root.getChildren().setAll(childNode1, childNode2, childNode3);
-
-
-        //Defining cell content
-
-        //Creating a column
-        //TreeTableColumn<String,String> column = new TreeTableColumn<>("Column");
-
+        for (CommonHeader extractedCommonHeader: extractedCommonHeaders) {
+            final TreeItem<CommonHeader> childNode = new TreeItem<>(extractedCommonHeader);
+            root.getChildren().add(childNode);
+        }
         headerColumn.setCellValueFactory(new TreeItemPropertyValueFactory("name"));
         descriptionColumn.setCellValueFactory(new TreeItemPropertyValueFactory("description"));
         exampleColumn.setCellValueFactory(new TreeItemPropertyValueFactory("example"));
 
-
-
-        /*column.setCellValueFactory((TreeTableColumn.CellDataFeatures<String, String> p) ->
-                new ReadOnlyStringWrapper(p.getValue().getValue()));*/
-
-
-        //Defining cell content
-        /*column.setCellValueFactory((TreeTableColumn.CellDataFeatures<String, String> p) ->
-                new ReadOnlyStringWrapper(p.getValue().getValue()));*/
-
         commonHeadersTable.setRoot(root);
-
-        //Creating a tree table view
-/*        final TreeTableView<String> treeTableView = new TreeTableView<>(root);
-        treeTableView.getColumns().add(column);
-        treeTableView.setPrefWidth(152);
-        treeTableView.setShowRoot(true);
-        sceneRoot.getChildren().add(treeTableView);
-        stage.setScene(scene);
-        stage.show();*/
+        commonHeadersTable.getSelectionModel().setSelectionMode(SelectionMode.MULTIPLE);
     }
 
     public void setDialogStage(Stage dialogStage) {
         this.dialogStage = dialogStage;
     }
+
+    @FXML
+    public void closeDialog() {
+        dialogStage.close();
+    }
+
+    @FXML
+    public void addSelectedHeaders () {
+        final ObservableList<TreeItem<CommonHeader>> selectedItems = commonHeadersTable.getSelectionModel().getSelectedItems();
+
+        for (TreeItem<CommonHeader> treeitem: selectedItems) {
+            setHeaderForm(treeitem.getValue().getExample());
+        }
+
+    }
+
 }

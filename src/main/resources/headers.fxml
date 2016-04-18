@@ -1,10 +1,10 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
+<?import javafx.geometry.*?>
 <?import javafx.scene.control.*?>
 <?import java.lang.*?>
 <?import javafx.scene.layout.*?>
 <?import javafx.scene.layout.GridPane?>
-
 
 <GridPane xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.aremy.simplyREST.HeadersController">
    <columnConstraints>
@@ -12,16 +12,24 @@
    </columnConstraints>
    <rowConstraints>
       <RowConstraints />
-      <RowConstraints />
+      <RowConstraints maxHeight="35.0" minHeight="35.0" prefHeight="35.0" />
    </rowConstraints>
    <children>
-      <TreeTableView fx:id="commonHeadersTable">
+      <TreeTableView fx:id="commonHeadersTable" GridPane.hgrow="ALWAYS" GridPane.vgrow="ALWAYS">
         <columns>
-          <TreeTableColumn fx:id="headerColumn" minWidth="15.0" prefWidth="100.0" text="Header" />
-          <TreeTableColumn fx:id="descriptionColumn" prefWidth="120.0" text="Description" />
-            <TreeTableColumn fx:id="exampleColumn" prefWidth="95.0" text="Example" />
+          <TreeTableColumn fx:id="headerColumn" maxWidth="1.7976931348623157E308" minWidth="100.0" prefWidth="100.0" text="Header" />
+          <TreeTableColumn fx:id="descriptionColumn" maxWidth="1.7976931348623157E308" minWidth="100.0" prefWidth="300.0" text="Description" />
+            <TreeTableColumn fx:id="exampleColumn" maxWidth="1.7976931348623157E308" minWidth="100.0" prefWidth="200.0" text="Example" />
         </columns>
+         <columnResizePolicy>
+            <TreeTableView fx:constant="CONSTRAINED_RESIZE_POLICY" />
+         </columnResizePolicy>
       </TreeTableView>
-      <Hyperlink onAction="#goToHeaderSource" text="From Wikipedia" GridPane.halignment="RIGHT" GridPane.rowIndex="1" />
+      <Button mnemonicParsing="false" onAction="#addSelectedHeaders" text="Add selected headers" GridPane.halignment="CENTER" GridPane.rowIndex="1">
+         <GridPane.margin>
+            <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
+         </GridPane.margin>
+      </Button>
+      <Hyperlink onAction="#closeDialog" text="Close" GridPane.halignment="RIGHT" GridPane.rowIndex="1" />
    </children>
 </GridPane>

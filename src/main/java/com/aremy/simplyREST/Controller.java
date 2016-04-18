@@ -100,6 +100,7 @@ public class Controller {
 
             HeadersController controller = loader.getController();
             controller.setDialogStage(dialogStage);
+            controller.setHeaderField(httpHeader);
 
             dialogStage.showAndWait();
         } catch (IOException e) {
@@ -112,7 +113,6 @@ public class Controller {
      */
     public void triggerApiCall() {
         // ProgressBar.INDETERMINATE_PROGRESS
-
 
         String targetUrl = url.getText();
         // prepend https:// if url does not start with http, https or ftp
