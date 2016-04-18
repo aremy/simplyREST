@@ -9,7 +9,7 @@ import org.apache.commons.codec.binary.Base64;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public class Base64encoderController {
+public class Base64encoderController extends HeaderManagerController {
     @FXML Stage dialogStage;
     @FXML TextField usernameToEncode;
     @FXML TextField passwordToEncode;
@@ -35,18 +35,8 @@ public class Base64encoderController {
     }
 
     public void setBase64encodedstring() {
-        if (headerField != null) {
-            String header = headerField.getText();
-            header += header + (header.isEmpty()?"":"\n") + "Authorization: Basic " + base64encodedstringToDecode.getText();
-            headerField.setText(header);
-            slf4jLogger.error("Header field is not empty but cannot be set");
-        } else {
-            slf4jLogger.error("Header field is empty");
-        }
-    }
-
-    public void setHeaderField(TextArea headerField) {
-        this.headerField = headerField;
+        String header = "Authorization: Basic " + base64encodedstringToDecode.getText();
+        setHeaderForm(header);
     }
 
     public void setDialogStage(Stage dialogStage) {
