@@ -1,5 +1,6 @@
 package com.aremy.simplyREST;
 
+import com.aremy.simplyREST.headerManagers.HeaderManagerController;
 import com.sun.javafx.scene.control.skin.TextAreaSkin;
 import com.sun.javafx.scene.control.skin.TextFieldSkin;
 import javafx.event.EventHandler;
@@ -15,7 +16,6 @@ import javafx.scene.image.Image;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyEvent;
 import javafx.scene.layout.GridPane;
-import javafx.scene.layout.Pane;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
 import org.apache.commons.io.IOUtils;
@@ -59,19 +59,23 @@ public class Controller {
         System.exit(0);
     }
 
-    public void openBase64EncodeDecode() {
-        FXMLLoader loader = new FXMLLoader();
-        loader.setLocation(Main.class.getResource("/base64encoder.fxml"));
-        GridPane page;
-        try {
-            page = loader.load();
 
-            final Stage dialogStage = new Stage();
-            dialogStage.setTitle("Generate Authorization Header");
+    /*RequestConfig config = RequestConfig.custom()
+            .setProxy(proxy)
+            .build();
+    */
+
+    private Stage openPoup(String title, String fxmlResource) {
+        final Stage dialogStage = new Stage();
+        try {
+            FXMLLoader loader = new FXMLLoader();
+            loader.setLocation(Main.class.getResource(fxmlResource));
+            GridPane pane = loader.load();
+            dialogStage.setTitle(title);
             dialogStage.initModality(Modality.WINDOW_MODAL);
             dialogStage.initOwner(rootPane.getScene().getWindow());
             dialogStage.getIcons().add(new Image(Main.class.getResourceAsStream("/img/World_icon.png")));
-            Scene scene = new Scene(page);
+            Scene scene = new Scene(pane);
             scene.addEventFilter(KeyEvent.KEY_PRESSED, new EventHandler<KeyEvent>() {
                 @Override
                 public void handle(KeyEvent t) {
@@ -82,49 +86,28 @@ public class Controller {
                 }
             });
             dialogStage.setScene(scene);
+            dialogStage.showAndWait();
 
-            Base64encoderController controller = loader.getController();
+            HeaderManagerController controller = loader.getController();
             controller.setDialogStage(dialogStage);
             controller.setHeaderField(httpHeader);
 
-            dialogStage.showAndWait();
         } catch (IOException e) {
             e.printStackTrace();
         }
+        return dialogStage;
+    }
+
+    public void openBase64EncodeDecode() {
+        openPoup("Generate Authorization Header", "/fxml/base64encoder.fxml");
     }
 
     public void openCommonHeaders() {
-        FXMLLoader loader = new FXMLLoader();
-        loader.setLocation(Main.class.getResource("/headers.fxml"));
-        GridPane page;
-        try {
-            page = loader.load();
+        openPoup("Common headers description & samples", "/fxml/headers.fxml");
+    }
 
-            final Stage dialogStage = new Stage();
-            dialogStage.setTitle("Common headers description & samples");
-            dialogStage.initModality(Modality.WINDOW_MODAL);
-            dialogStage.initOwner(rootPane.getScene().getWindow());
-            dialogStage.getIcons().add(new Image(Main.class.getResourceAsStream("/img/World_icon.png")));
-            Scene scene = new Scene(page);
-            scene.addEventFilter(KeyEvent.KEY_PRESSED, new EventHandler<KeyEvent>() {
-                @Override
-                public void handle(KeyEvent t) {
-                    if(t.getCode() == KeyCode.ESCAPE)
-                    {
-                        dialogStage.close();
-                    }
-                }
-            });
-            dialogStage.setScene(scene);
-
-            HeadersController controller = loader.getController();
-            controller.setDialogStage(dialogStage);
-            controller.setHeaderField(httpHeader);
-
-            dialogStage.showAndWait();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
+    public void openProxyConfiguration() {
+        openPoup("Proxy Configuration", "/fxml/properties.fxml");
     }
 
     /**

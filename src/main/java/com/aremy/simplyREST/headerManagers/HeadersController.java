@@ -1,18 +1,12 @@
-package com.aremy.simplyREST;
+package com.aremy.simplyREST.headerManagers;
 
-import com.sun.javafx.application.HostServicesDelegate;
-import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
-import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.scene.control.SelectionMode;
 import javafx.scene.control.TreeItem;
 import javafx.scene.control.TreeTableColumn;
 import javafx.scene.control.TreeTableView;
 import javafx.scene.control.cell.TreeItemPropertyValueFactory;
-import javafx.scene.input.KeyCode;
-import javafx.scene.input.KeyEvent;
-import javafx.stage.Stage;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
@@ -24,16 +18,12 @@ import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
 import java.io.*;
 import java.util.ArrayList;
-import java.util.Collection;
-import java.util.List;
 
 public class HeadersController extends HeaderManagerController {
     @FXML private TreeTableView<CommonHeader> commonHeadersTable;
     @FXML private TreeTableColumn headerColumn;
     @FXML private TreeTableColumn descriptionColumn;
     @FXML private TreeTableColumn exampleColumn;
-
-    private Stage dialogStage;
 
     public void goToHeaderSource() {
         //String url = "https://en.wikipedia.org/wiki/List_of_HTTP_header_fields";
@@ -131,10 +121,6 @@ public class HeadersController extends HeaderManagerController {
         commonHeadersTable.setShowRoot(false);
 
         commonHeadersTable.getSelectionModel().setSelectionMode(SelectionMode.MULTIPLE);
-    }
-
-    public void setDialogStage(Stage dialogStage) {
-        this.dialogStage = dialogStage;
     }
 
     @FXML

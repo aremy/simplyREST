@@ -1,16 +1,14 @@
-package com.aremy.simplyREST;
+package com.aremy.simplyREST.headerManagers;
 
 import javafx.fxml.FXML;
 import javafx.scene.control.TextArea;
 import javafx.scene.control.TextField;
-import javafx.scene.layout.GridPane;
-import javafx.stage.Stage;
 import org.apache.commons.codec.binary.Base64;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 public class Base64encoderController extends HeaderManagerController {
-    @FXML Stage dialogStage;
+
     @FXML TextField usernameToEncode;
     @FXML TextField passwordToEncode;
     @FXML TextField base64encodedstringToDecode;
@@ -39,7 +37,5 @@ public class Base64encoderController extends HeaderManagerController {
         setHeaderForm(header);
     }
 
-    public void setDialogStage(Stage dialogStage) {
-        this.dialogStage = dialogStage;
-    }
+
 }

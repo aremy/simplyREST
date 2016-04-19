@@ -1,12 +1,13 @@
-package com.aremy.simplyREST;
+package com.aremy.simplyREST.headerManagers;
 
 import javafx.fxml.FXML;
 import javafx.scene.control.TextArea;
+import javafx.stage.Stage;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 public abstract class HeaderManagerController {
-
+    @FXML Stage dialogStage;
     @FXML
     private TextArea headerField;
 
@@ -14,6 +15,10 @@ public abstract class HeaderManagerController {
 
     public void setHeaderField(TextArea headerField) {
         this.headerField = headerField;
+    }
+
+    public void setDialogStage(Stage dialogStage) {
+        this.dialogStage = dialogStage;
     }
 
     public void setHeaderForm(String inputHeader) {
@@ -26,4 +31,5 @@ public abstract class HeaderManagerController {
             slf4jLogger.error("Header field is empty");
         }
     }
+
 }

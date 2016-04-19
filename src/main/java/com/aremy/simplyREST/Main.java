@@ -11,15 +11,12 @@ public class Main extends Application {
 
     @Override
     public void start(Stage primaryStage) throws Exception{
-        FXMLLoader loader = new FXMLLoader(getClass().getResource("/sample.fxml"));
+        FXMLLoader loader = new FXMLLoader(getClass().getResource("/fxml/main.fxml"));
         Parent root = loader.load();
         primaryStage.setTitle("simplyREST");
         primaryStage.getIcons().add(new Image(Main.class.getResourceAsStream("/img/World_icon.png")));
         primaryStage.setScene(new Scene(root));
         primaryStage.show();
-
- //       httpMethodChoiceController.setData();
-
     }
 
 
