@@ -3,12 +3,15 @@ package com.aremy.simplyREST;
 import com.sun.javafx.application.HostServicesDelegate;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
+import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.scene.control.SelectionMode;
 import javafx.scene.control.TreeItem;
 import javafx.scene.control.TreeTableColumn;
 import javafx.scene.control.TreeTableView;
 import javafx.scene.control.cell.TreeItemPropertyValueFactory;
+import javafx.scene.input.KeyCode;
+import javafx.scene.input.KeyEvent;
 import javafx.stage.Stage;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
@@ -59,8 +62,8 @@ public class HeadersController extends HeaderManagerController {
     }
 
 
-    protected ArrayList<CommonHeader> getCommonHeadersFromXml() {
-        ArrayList<CommonHeader> commonHeadersFromXml = new ArrayList<>();
+    protected ArrayList<TreeItem<CommonHeader>> getCommonHeadersFromXml() {
+        ArrayList<TreeItem<CommonHeader>> result = new ArrayList<>();
         DocumentBuilderFactory factory =
                 DocumentBuilderFactory.newInstance();
 
@@ -72,16 +75,31 @@ public class HeadersController extends HeaderManagerController {
             File file = new File(classLoader.getResource("headers.xml").getFile());
 
             Document doc = builder.parse(file);
-            NodeList nList = doc.getElementsByTagName("header");
-            for (int temp = 0; temp < nList.getLength(); temp++) {
-                Node nNode = nList.item(temp);
-                if (nNode.getNodeType() == Node.ELEMENT_NODE) {
-
-                    Element eElement = (Element) nNode;
-                    commonHeadersFromXml.add(new CommonHeader(eElement.getElementsByTagName("name").item(0).getTextContent(),
-                    eElement.getElementsByTagName("description").item(0).getTextContent(),
-                    eElement.getElementsByTagName("example").item(0).getTextContent()));
+            NodeList categoriesNodes = doc.getElementsByTagName("category");
+            for (int categoryindex = 0; categoryindex < categoriesNodes.getLength(); categoryindex++) {
+                ArrayList<CommonHeader> extractedCommonHeaders = new ArrayList<>();
+                Node node = categoriesNodes.item(categoryindex);
+                NodeList nList = node.getChildNodes();
+                for (int temp = 0; temp < nList.getLength(); temp++) {
+                    Node nNode = nList.item(temp);
+                    if (nNode.getNodeName() == "header" && nNode.getNodeType() == Node.ELEMENT_NODE) {
+                        Element eElement = (Element) nNode;
+                        extractedCommonHeaders.add(new CommonHeader(eElement.getElementsByTagName("name").item(0).getTextContent(),
+                                eElement.getElementsByTagName("description").item(0).getTextContent(),
+                                eElement.getElementsByTagName("example").item(0).getTextContent()));
+                    }
                 }
+
+                // create a root item for each category
+                final TreeItem<CommonHeader> category = new TreeItem<>(new CommonHeader(node.getAttributes().getNamedItem("name").getTextContent(), "",""));
+                category.setExpanded(true);
+
+                //Adding tree items to the root
+                for (CommonHeader extractedCommonHeader: extractedCommonHeaders) {
+                    final TreeItem<CommonHeader> childNode = new TreeItem<>(extractedCommonHeader);
+                    category.getChildren().add(childNode);
+                }
+                result.add(category);
             }
         } catch (ParserConfigurationException e) {
             e.printStackTrace();
@@ -92,24 +110,26 @@ public class HeadersController extends HeaderManagerController {
         } catch (SAXException e) {
             e.printStackTrace();
         }
-        return commonHeadersFromXml;
+        return result;
     }
 
     @FXML
     public void initialize() {
-        Collection<CommonHeader> extractedCommonHeaders = getCommonHeadersFromXml();
-        final TreeItem<CommonHeader> root = new TreeItem<>(new CommonHeader("Common Headers", "",""));
+        //Collection<CommonHeader> extractedCommonHeaders = getCommonHeadersFromXml();
+
+        final TreeItem<CommonHeader> root = new TreeItem<>(new CommonHeader("", "",""));
         root.setExpanded(true);
 
         //Adding tree items to the root
-        for (CommonHeader extractedCommonHeader: extractedCommonHeaders) {
-            final TreeItem<CommonHeader> childNode = new TreeItem<>(extractedCommonHeader);
-            root.getChildren().add(childNode);
+        for (TreeItem<CommonHeader> extractedCommonHeader: getCommonHeadersFromXml()) {
+            root.getChildren().add(extractedCommonHeader);
         }
         headerColumn.setCellValueFactory(new TreeItemPropertyValueFactory("name"));
         descriptionColumn.setCellValueFactory(new TreeItemPropertyValueFactory("description"));
         exampleColumn.setCellValueFactory(new TreeItemPropertyValueFactory("example"));
         commonHeadersTable.setRoot(root);
+        commonHeadersTable.setShowRoot(false);
+
         commonHeadersTable.getSelectionModel().setSelectionMode(SelectionMode.MULTIPLE);
     }
 

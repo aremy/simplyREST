@@ -2,13 +2,20 @@
     <xs:element name="headers">
         <xs:complexType>
             <xs:sequence>
-                <xs:element name="header" maxOccurs="unbounded" minOccurs="0">
+                <xs:element name="category" maxOccurs="unbounded" minOccurs="0">
                     <xs:complexType>
                         <xs:sequence>
-                            <xs:element type="xs:string" name="name"/>
-                            <xs:element type="xs:string" name="description"/>
-                            <xs:element type="xs:string" name="example"/>
+                            <xs:element name="header" maxOccurs="unbounded" minOccurs="0">
+                                <xs:complexType>
+                                    <xs:sequence>
+                                        <xs:element type="xs:string" name="name"/>
+                                        <xs:element type="xs:string" name="description"/>
+                                        <xs:element type="xs:string" name="example"/>
+                                    </xs:sequence>
+                                </xs:complexType>
+                            </xs:element>
                         </xs:sequence>
+                        <xs:attribute type="xs:string" name="name"/>
                     </xs:complexType>
                 </xs:element>
             </xs:sequence>

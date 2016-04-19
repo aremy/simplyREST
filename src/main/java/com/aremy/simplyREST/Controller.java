@@ -2,6 +2,7 @@ package com.aremy.simplyREST;
 
 import com.sun.javafx.scene.control.skin.TextAreaSkin;
 import com.sun.javafx.scene.control.skin.TextFieldSkin;
+import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Node;
@@ -65,12 +66,21 @@ public class Controller {
         try {
             page = loader.load();
 
-            Stage dialogStage = new Stage();
+            final Stage dialogStage = new Stage();
             dialogStage.setTitle("Generate Authorization Header");
             dialogStage.initModality(Modality.WINDOW_MODAL);
             dialogStage.initOwner(rootPane.getScene().getWindow());
             dialogStage.getIcons().add(new Image(Main.class.getResourceAsStream("/img/World_icon.png")));
             Scene scene = new Scene(page);
+            scene.addEventFilter(KeyEvent.KEY_PRESSED, new EventHandler<KeyEvent>() {
+                @Override
+                public void handle(KeyEvent t) {
+                    if(t.getCode() == KeyCode.ESCAPE)
+                    {
+                        dialogStage.close();
+                    }
+                }
+            });
             dialogStage.setScene(scene);
 
             Base64encoderController controller = loader.getController();
@@ -90,12 +100,21 @@ public class Controller {
         try {
             page = loader.load();
 
-            Stage dialogStage = new Stage();
+            final Stage dialogStage = new Stage();
             dialogStage.setTitle("Common headers description & samples");
             dialogStage.initModality(Modality.WINDOW_MODAL);
             dialogStage.initOwner(rootPane.getScene().getWindow());
             dialogStage.getIcons().add(new Image(Main.class.getResourceAsStream("/img/World_icon.png")));
             Scene scene = new Scene(page);
+            scene.addEventFilter(KeyEvent.KEY_PRESSED, new EventHandler<KeyEvent>() {
+                @Override
+                public void handle(KeyEvent t) {
+                    if(t.getCode() == KeyCode.ESCAPE)
+                    {
+                        dialogStage.close();
+                    }
+                }
+            });
             dialogStage.setScene(scene);
 
             HeadersController controller = loader.getController();
