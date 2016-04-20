@@ -1,0 +1,8 @@
+<properties>
+    <proxy>
+        <host>localhost</host>
+        <port>3128</port>
+        <login>mylogin</login>
+        <password>mypassword</password>
+    </proxy>
+</properties>
