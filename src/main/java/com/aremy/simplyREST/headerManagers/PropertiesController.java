@@ -1,18 +1,11 @@
 package com.aremy.simplyREST.headerManagers;
 
-import com.aremy.simplyREST.Controller;
-import com.aremy.simplyREST.generated.Properties;
+import com.aremy.simplyREST.objects.PropertiesManager;
 import javafx.fxml.FXML;
 import javafx.scene.control.Alert;
 import javafx.scene.control.TextField;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import javax.xml.bind.JAXBContext;
-import javax.xml.bind.JAXBException;
-import javax.xml.bind.Marshaller;
-import javax.xml.bind.Unmarshaller;
-import java.io.File;
 
 public class PropertiesController extends HeaderManagerController {
 
@@ -21,45 +14,15 @@ public class PropertiesController extends HeaderManagerController {
     @FXML TextField proxyLogin;
     @FXML TextField proxyPassword;
 
-    private final Logger slf4jLogger = LoggerFactory.getLogger(Controller.class);
-
-    private final String PROPERTIES_FILE_NAME = "properties.xml";
+    private final Logger slf4jLogger = LoggerFactory.getLogger(PropertiesController.class);
 
     @FXML
     public void initialize() {
-        File propertiesFile = new File(PROPERTIES_FILE_NAME);
-        if (propertiesFile.exists() && propertiesFile.isFile()) {
-            Properties.Proxy proxyConfiguration = loadPersonDataFromFile(propertiesFile);
-            proxyHost.setText(proxyConfiguration.getHost());
-            proxyPort.setText(String.valueOf(proxyConfiguration.getPort()));
-            proxyLogin.setText(proxyConfiguration.getLogin());
-            proxyPassword.setText(proxyConfiguration.getPassword());
-        }
-
-    }
-
-    /**
-     * Loads proxy properties
-     *
-     * @param file
-     */
-    protected Properties.Proxy loadPersonDataFromFile(File file) {
-        Properties.Proxy result = null;
-        try {
-            JAXBContext context = JAXBContext
-                    .newInstance(Properties.class);
-            Unmarshaller um = context.createUnmarshaller();
-
-            // Reading XML from the file and unmarshalling.
-            Properties wrapper = (Properties) um.unmarshal(file);
-
-            result = wrapper.getProxy();
-
-        } // catches ANY exception
-        catch (JAXBException e) {
-            slf4jLogger.error("Error while loading properties");
-        }
-        return result;
+        PropertiesManager propertiesManager = PropertiesManager.instance();
+        proxyHost.setText(propertiesManager.proxyHost);
+        proxyPort.setText(String.valueOf(propertiesManager.proxyPort));
+        proxyLogin.setText(propertiesManager.proxyLogin);
+        proxyPassword.setText(propertiesManager.proxyPassword);
     }
 
     @FXML
@@ -75,27 +38,12 @@ public class PropertiesController extends HeaderManagerController {
             alert.showAndWait();
             return;
         }
+        PropertiesManager.proxyHost = proxyHost.getText();
+        PropertiesManager.proxyPort = Short.valueOf(proxyPort.getText());
+        PropertiesManager.proxyLogin = proxyLogin.getText();
+        PropertiesManager.proxyPassword = proxyPassword.getText();
+        PropertiesManager.save();
 
-        try {
-            JAXBContext context = JAXBContext
-                    .newInstance(Properties.class);
-            Marshaller m = context.createMarshaller();
-            m.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, true);
-
-            Properties wrapper = new Properties();
-            Properties.Proxy proxyProperties = new Properties.Proxy();
-            proxyProperties.setHost(proxyHost.getText());
-
-            proxyProperties.setPort(Short.valueOf(proxyPort.getText()));
-            proxyProperties.setLogin(proxyLogin.getText());
-            proxyProperties.setPassword(proxyPassword.getText());
-            wrapper.setProxy(proxyProperties);
-
-            // Marshalling and saving XML to the file.
-            m.marshal(wrapper, new File(PROPERTIES_FILE_NAME));
-        } catch (JAXBException e) {
-            slf4jLogger.error("Error while loading properties");
-        }
-
+        dialogStage.close();
     }
 }

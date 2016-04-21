@@ -86,11 +86,10 @@ public class Controller {
                 }
             });
             dialogStage.setScene(scene);
-            dialogStage.showAndWait();
-
             HeaderManagerController controller = loader.getController();
             controller.setDialogStage(dialogStage);
             controller.setHeaderField(httpHeader);
+            dialogStage.showAndWait();
 
         } catch (IOException e) {
             e.printStackTrace();
