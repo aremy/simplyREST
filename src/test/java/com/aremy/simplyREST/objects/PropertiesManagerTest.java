@@ -14,7 +14,7 @@ public class PropertiesManagerTest {
         PropertiesManager propertiesManager = PropertiesManager.instance(file);
 
         assertEquals("localhost", propertiesManager.proxyHost);
-        assertEquals(3128, propertiesManager.proxyPort);
+        assertEquals("3128", propertiesManager.proxyPort);
         assertEquals("mylogin", propertiesManager.proxyLogin);
         assertEquals("mypassword", propertiesManager.proxyPassword);
     }

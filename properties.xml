@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="UTF-8" standalone="yes"?>
 <properties>
     <proxy>
-        <host>a</host>
-        <port>232</port>
-        <login>a</login>
-        <password>x</password>
+        <host></host>
+        <port></port>
+        <login></login>
+        <password></password>
     </proxy>
 </properties>

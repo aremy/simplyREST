@@ -28,7 +28,9 @@ public class PropertiesController extends HeaderManagerController {
     @FXML
     public void saveProxyConfiguration() {
         try {
-            Short.valueOf(proxyPort.getText());
+            String port = proxyPort.getText();
+            if (!"".equals(port))
+                Short.valueOf(port);
         } catch(NumberFormatException e){
             Alert alert = new Alert(Alert.AlertType.ERROR);
             alert.setTitle("Error");
@@ -39,7 +41,7 @@ public class PropertiesController extends HeaderManagerController {
             return;
         }
         PropertiesManager.proxyHost = proxyHost.getText();
-        PropertiesManager.proxyPort = Short.valueOf(proxyPort.getText());
+        PropertiesManager.proxyPort = proxyPort.getText();
         PropertiesManager.proxyLogin = proxyLogin.getText();
         PropertiesManager.proxyPassword = proxyPassword.getText();
         PropertiesManager.save();

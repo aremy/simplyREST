@@ -1,8 +1,10 @@
 package com.aremy.simplyREST;
 
 import com.aremy.simplyREST.headerManagers.HeaderManagerController;
+import com.aremy.simplyREST.objects.PropertiesManager;
 import com.sun.javafx.scene.control.skin.TextAreaSkin;
 import com.sun.javafx.scene.control.skin.TextFieldSkin;
+import com.sun.org.apache.xpath.internal.operations.Number;
 import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
@@ -21,10 +23,16 @@ import javafx.stage.Stage;
 import org.apache.commons.io.IOUtils;
 import org.apache.http.Header;
 import org.apache.http.HttpEntity;
+import org.apache.http.HttpHost;
 import org.apache.http.NameValuePair;
+import org.apache.http.auth.AuthScope;
+import org.apache.http.auth.UsernamePasswordCredentials;
+import org.apache.http.client.CredentialsProvider;
+import org.apache.http.client.config.RequestConfig;
 import org.apache.http.client.entity.UrlEncodedFormEntity;
 import org.apache.http.client.methods.*;
 import org.apache.http.entity.StringEntity;
+import org.apache.http.impl.client.BasicCredentialsProvider;
 import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.impl.client.HttpClients;
 import org.apache.http.message.BasicNameValuePair;
@@ -114,7 +122,7 @@ public class Controller {
      */
     public void triggerApiCall() {
         // ProgressBar.INDETERMINATE_PROGRESS
-
+        httpAnswerBody.setText("");
         String targetUrl = url.getText();
         // prepend https:// if url does not start with http, https or ftp
         if (!targetUrl.matches("^(https?|ftp)://.*$")) {
@@ -135,82 +143,141 @@ public class Controller {
             }
         }
         String targetBody = httpBody.getText();
-        slf4jLogger.info("Request headers:\n{}", headers.toString());
+        //slf4jLogger.info("Request headers:\n{}", headers.toString());
         //downloadProgress.setVisible(true);
 
+        httpAnswerHeaders.setText("Downloading...");
         httpAnswerBody.setText("Downloading...");
-        String targetHttpAnswer = "";
-        CloseableHttpResponse response = null;
+
         try {
             switch ((String) httpMethod.getValue()) {
                 case "GET":
-                    targetHttpAnswer = triggerHttpGet(targetUrl, headers, response);
+                    triggerHttpGet(targetUrl, headers);
                     break;
                 case "POST":
-                    targetHttpAnswer = triggerHttpPostPut(new HttpPost(targetUrl), headers, targetBody, response);
+                    triggerHttpPostPut(new HttpPost(targetUrl), headers, targetBody);
                     break;
                 case "PUT":
-                    targetHttpAnswer = triggerHttpPostPut(new HttpPut(targetUrl), headers, targetBody, response);
+                    triggerHttpPostPut(new HttpPut(targetUrl), headers, targetBody);
                     break;
                 case "DELETE":
-                    targetHttpAnswer = triggerHttpDelete(targetUrl, headers, response);
+                    triggerHttpDelete(targetUrl, headers);
                     break;
                 default:
                     break;
 
             }
         } catch (UnsupportedEncodingException e){
-            targetHttpAnswer = e.getCause().getMessage();
             slf4jLogger.error(e.getCause().getMessage());
+            httpAnswerHeaders.setText(e.getCause().getMessage());
+            httpAnswerBody.setText(e.getCause().getMessage());
+
         } catch (IOException e) {
             slf4jLogger.error("Could not reach {}", targetUrl);
-        } finally {
-            try {
-                if (response != null)
-                    response.close();
-            } catch (IOException e) {
-                slf4jLogger.error(e.getCause().getMessage());
-                targetHttpAnswer = "Error:" + e.getCause().getMessage();
+            httpAnswerHeaders.setText("Could not reach " + targetUrl);
+            httpAnswerBody.setText("Could not reach " + targetUrl);
+
+        }
+    }
+
+    private String triggerHttpGet(String targetUrl, List<NameValuePair> headers) throws IOException {
+        CloseableHttpResponse response = null;
+        try {
+            String result;
+            //CloseableHttpClient httpclient = HttpClients.createDefault();
+            CloseableHttpClient httpclient = HttpClients.createDefault();
+            HttpGet httpGet = new HttpGet(targetUrl);
+            RequestConfig config = getProxyConfig();
+            if (config!= null)
+                httpGet.setConfig(config);
+                setProxyAuth(httpclient);
+            for (NameValuePair pair : headers) {
+                httpGet.setHeader(pair.getName(), pair.getValue());
             }
+            response = httpclient.execute(httpGet);
+            result = handleHttpResponse(response);
+            return result;
+        } finally {
+            if (response != null)
+                response.close();
         }
-        httpAnswerBody.setText(targetHttpAnswer);
     }
 
-    private String triggerHttpGet(String targetUrl, List<NameValuePair> headers, CloseableHttpResponse response) throws IOException {
-        String result = "";
-        CloseableHttpClient httpclient = HttpClients.createDefault();
-        HttpGet httpGet = new HttpGet(targetUrl);
-        for (NameValuePair pair: headers) {
-            httpGet.setHeader(pair.getName(), pair.getValue());
+    private String triggerHttpDelete(String targetUrl, List<NameValuePair> headers) throws IOException {
+        CloseableHttpResponse response = null;
+        try {
+            String result;
+            CloseableHttpClient httpclient = HttpClients.createDefault();
+            HttpDelete httpDelete = new HttpDelete(targetUrl);
+            RequestConfig config = getProxyConfig();
+            if (config!= null)
+                httpDelete.setConfig(config);
+                setProxyAuth(httpclient);
+            for (NameValuePair pair: headers) {
+                httpDelete.setHeader(pair.getName(), pair.getValue());
+            }
+            response = httpclient.execute(httpDelete);
+            result = handleHttpResponse(response);
+            return result;
+        } finally {
+            if (response != null)
+                response.close();
         }
-        response = httpclient.execute(httpGet);
-        result = handleHttpResponse(response);
+    }
+
+    private String triggerHttpPostPut(HttpEntityEnclosingRequestBase httpPutPost, List<NameValuePair> headers, String targetBody) throws IOException {
+        CloseableHttpResponse response = null;
+        try {
+            String result;
+            CloseableHttpClient httpclient = HttpClients.createDefault();
+            for (NameValuePair pair: headers) {
+                httpPutPost.setHeader(pair.getName(), pair.getValue());
+            }
+            RequestConfig config = getProxyConfig();
+            if (config!= null)
+                httpPutPost.setConfig(config);
+                setProxyAuth(httpclient);
+            httpPutPost.setEntity(new StringEntity(targetBody));
+            httpPutPost.setEntity(new UrlEncodedFormEntity(headers));
+            response = httpclient.execute(httpPutPost);
+            result = handleHttpResponse(response);
+            return result;
+        } finally {
+            if (response != null)
+                response.close();
+        }
+    }
+
+    private RequestConfig getProxyConfig() {
+        RequestConfig result = null;
+        PropertiesManager propertiesManager = PropertiesManager.instance();
+
+        // scheme
+        try {
+            HttpHost proxy = new HttpHost(propertiesManager.proxyHost, Short.valueOf(propertiesManager.proxyPort), "http");
+            result = RequestConfig.custom()
+                    .setProxy(proxy)
+                    .build();
+        } catch (NumberFormatException e) {
+            //
+        }
         return result;
     }
 
-    private String triggerHttpDelete(String targetUrl, List<NameValuePair> headers, CloseableHttpResponse response) throws IOException {
-        String result = "";
-        CloseableHttpClient httpclient = HttpClients.createDefault();
-        HttpDelete httpDelete = new HttpDelete(targetUrl);
-        for (NameValuePair pair: headers) {
-            httpDelete.setHeader(pair.getName(), pair.getValue());
-        }
-        response = httpclient.execute(httpDelete);
-        result = handleHttpResponse(response);
-        return result;
-    }
+    private CloseableHttpClient setProxyAuth(CloseableHttpClient httpClient) {
+        CredentialsProvider basicCredentialsProvider = null;
+        PropertiesManager propertiesManager = PropertiesManager.instance();
 
-    private String triggerHttpPostPut(HttpEntityEnclosingRequestBase httpPutPost, List<NameValuePair> headers, String targetBody, CloseableHttpResponse response) throws IOException {
-        String result = "";
-        CloseableHttpClient httpclient = HttpClients.createDefault();
-        for (NameValuePair pair: headers) {
-            httpPutPost.setHeader(pair.getName(), pair.getValue());
+        try {
+            basicCredentialsProvider = new BasicCredentialsProvider();
+            basicCredentialsProvider.setCredentials(
+                    new AuthScope(propertiesManager.proxyHost, Short.valueOf(propertiesManager.proxyPort)),
+                    new UsernamePasswordCredentials(propertiesManager.proxyLogin, propertiesManager.proxyPassword));
+            httpClient = HttpClients.custom().setDefaultCredentialsProvider(basicCredentialsProvider).build();
+        } catch (NumberFormatException e) {
+            //
         }
-        httpPutPost.setEntity(new StringEntity(targetBody));
-        httpPutPost.setEntity(new UrlEncodedFormEntity(headers));
-        response = httpclient.execute(httpPutPost);
-        result = handleHttpResponse(response);
-        return result;
+        return httpClient;
     }
 
     /**
@@ -228,12 +295,15 @@ public class Controller {
         for (Header header: response.getAllHeaders()) {
             headers += header.getName() + ": " + header.getValue() + "\n";
         }
-        httpAnswerHeaders.setText(headers);
 
         StringWriter writer = new StringWriter();
         IOUtils.copy(entity1.getContent(), writer, getCharsetFromContentType(response.getFirstHeader("Content-Type").getValue()));
         result = writer.toString();
         EntityUtils.consume(entity1);
+
+        httpAnswerHeaders.setText(headers);
+        httpAnswerBody.setText(result);
+
         return result;
     }
 

@@ -18,7 +18,7 @@ public class PropertiesManager {
     private static final String PROPERTIES_FILE_NAME = "properties.xml";
 
     public static String proxyHost;
-    public static short proxyPort;
+    public static String proxyPort;
     public static String proxyLogin;
     public static String proxyPassword;
 
@@ -64,7 +64,7 @@ public class PropertiesManager {
             Properties.Proxy proxyProperties = new Properties.Proxy();
             proxyProperties.setHost(proxyHost);
 
-            proxyProperties.setPort(Short.valueOf(proxyPort));
+            proxyProperties.setPort(proxyPort);
             proxyProperties.setLogin(proxyLogin);
             proxyProperties.setPassword(proxyPassword);
             wrapper.setProxy(proxyProperties);
