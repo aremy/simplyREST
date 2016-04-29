@@ -20,7 +20,7 @@ public class PropertiesController extends HeaderManagerController {
     public void initialize() {
         PropertiesManager propertiesManager = PropertiesManager.instance();
         proxyHost.setText(propertiesManager.proxyHost);
-        proxyPort.setText(String.valueOf(propertiesManager.proxyPort));
+        proxyPort.setText(propertiesManager.proxyPort);
         proxyLogin.setText(propertiesManager.proxyLogin);
         proxyPassword.setText(propertiesManager.proxyPassword);
     }
