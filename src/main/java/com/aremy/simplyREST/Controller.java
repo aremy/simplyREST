@@ -21,10 +21,7 @@ import javafx.scene.layout.GridPane;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
 import org.apache.commons.io.IOUtils;
-import org.apache.http.Header;
-import org.apache.http.HttpEntity;
-import org.apache.http.HttpHost;
-import org.apache.http.NameValuePair;
+import org.apache.http.*;
 import org.apache.http.auth.AuthScope;
 import org.apache.http.auth.UsernamePasswordCredentials;
 import org.apache.http.client.CredentialsProvider;
@@ -163,6 +160,15 @@ public class Controller {
                 case "DELETE":
                     triggerHttpDelete(targetUrl, headers);
                     break;
+                case "HEAD":
+                    triggerHttpHead(targetUrl, headers);
+                    break;
+                case "TRACE":
+                    triggerHttpTrace(targetUrl, headers);
+                    break;
+                case "OPTIONS":
+                    triggerHttpOptions(targetUrl, headers);
+                    break;
                 default:
                     break;
 
@@ -195,6 +201,74 @@ public class Controller {
                 httpGet.setHeader(pair.getName(), pair.getValue());
             }
             response = httpclient.execute(httpGet);
+            result = handleHttpResponse(response);
+            return result;
+        } finally {
+            if (response != null)
+                response.close();
+        }
+    }
+
+    // head, trace, option, connect
+    private String triggerHttpHead(String targetUrl, List<NameValuePair> headers) throws IOException {
+        CloseableHttpResponse response = null;
+        try {
+            String result;
+            CloseableHttpClient httpclient = HttpClients.createDefault();
+            HttpHead httpHead = new HttpHead(targetUrl);
+            RequestConfig config = getProxyConfig();
+            if (config!= null)
+                httpHead.setConfig(config);
+            setProxyAuth(httpclient);
+            for (NameValuePair pair : headers) {
+                httpHead.setHeader(pair.getName(), pair.getValue());
+            }
+            response = httpclient.execute(httpHead);
+            result = handleHttpResponse(response);
+            return result;
+        } finally {
+            if (response != null)
+                response.close();
+        }
+    }
+
+    // head, trace, option, connect
+    private String triggerHttpOptions(String targetUrl, List<NameValuePair> headers) throws IOException {
+        CloseableHttpResponse response = null;
+        try {
+            String result;
+            CloseableHttpClient httpclient = HttpClients.createDefault();
+            HttpOptions httpOptions = new HttpOptions(targetUrl);
+            RequestConfig config = getProxyConfig();
+            if (config!= null)
+                httpOptions.setConfig(config);
+            setProxyAuth(httpclient);
+            for (NameValuePair pair : headers) {
+                httpOptions.setHeader(pair.getName(), pair.getValue());
+            }
+            response = httpclient.execute(httpOptions);
+            result = handleHttpResponse(response);
+            return result;
+        } finally {
+            if (response != null)
+                response.close();
+        }
+    }
+
+    private String triggerHttpTrace(String targetUrl, List<NameValuePair> headers) throws IOException {
+        CloseableHttpResponse response = null;
+        try {
+            String result;
+            CloseableHttpClient httpclient = HttpClients.createDefault();
+            HttpTrace httpTrace = new HttpTrace(targetUrl);
+            RequestConfig config = getProxyConfig();
+            if (config!= null)
+                httpTrace.setConfig(config);
+            setProxyAuth(httpclient);
+            for (NameValuePair pair : headers) {
+                httpTrace.setHeader(pair.getName(), pair.getValue());
+            }
+            response = httpclient.execute(httpTrace);
             result = handleHttpResponse(response);
             return result;
         } finally {
