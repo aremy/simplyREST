@@ -267,15 +267,16 @@ public class Controller {
     private CloseableHttpClient setProxyAuth(CloseableHttpClient httpClient) {
         CredentialsProvider basicCredentialsProvider = null;
         PropertiesManager propertiesManager = PropertiesManager.instance();
-
-        try {
-            basicCredentialsProvider = new BasicCredentialsProvider();
-            basicCredentialsProvider.setCredentials(
-                    new AuthScope(propertiesManager.proxyHost, Short.valueOf(propertiesManager.proxyPort)),
-                    new UsernamePasswordCredentials(propertiesManager.proxyLogin, propertiesManager.proxyPassword));
-            httpClient = HttpClients.custom().setDefaultCredentialsProvider(basicCredentialsProvider).build();
-        } catch (NumberFormatException e) {
-            //
+        if (propertiesManager.proxyLogin != null && !"".equals(propertiesManager.proxyLogin)) {
+          try {
+              basicCredentialsProvider = new BasicCredentialsProvider();
+              basicCredentialsProvider.setCredentials(
+                      new AuthScope(propertiesManager.proxyHost, Short.valueOf(propertiesManager.proxyPort)),
+                      new UsernamePasswordCredentials(propertiesManager.proxyLogin, propertiesManager.proxyPassword));
+              httpClient = HttpClients.custom().setDefaultCredentialsProvider(basicCredentialsProvider).build();
+          } catch (NumberFormatException e) {
+              //
+          }
         }
         return httpClient;
     }
