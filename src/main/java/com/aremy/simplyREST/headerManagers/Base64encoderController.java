@@ -34,7 +34,7 @@ public class Base64encoderController extends HeaderManagerController {
 
     public void setBase64encodedstring() {
         String header = "Authorization: Basic " + base64encodedstringToDecode.getText();
-        setHeaderForm(header);
+        appendHeaderForm(header);
     }
 
 

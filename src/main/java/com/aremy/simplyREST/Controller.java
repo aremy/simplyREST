@@ -93,7 +93,9 @@ public class Controller {
             dialogStage.setScene(scene);
             HeaderManagerController controller = loader.getController();
             controller.setDialogStage(dialogStage);
+            controller.setUrlField(url);
             controller.setHeaderField(httpHeader);
+            controller.setBodyField(httpBody);
             dialogStage.showAndWait();
 
         } catch (IOException e) {
@@ -112,6 +114,10 @@ public class Controller {
 
     public void openProxyConfiguration() {
         openPoup("Proxy Configuration", "/fxml/properties.fxml");
+    }
+
+    public void openLoadPresets() {
+        openPoup("Load Presets", "/fxml/loadpopup.fxml");
     }
 
     /**

@@ -21,7 +21,7 @@
     <columnConstraints>
         <ColumnConstraints />
         <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" />
-      <ColumnConstraints />
+        <ColumnConstraints />
     </columnConstraints>
     <rowConstraints>
         <RowConstraints maxHeight="25.0" minHeight="25.0" prefHeight="25.0" vgrow="SOMETIMES" />
@@ -96,18 +96,20 @@
             <menus>
                 <Menu mnemonicParsing="false" text="File">
                     <items>
+                  <MenuItem mnemonicParsing="false" onAction="#openLoadPresets" text="Load" />
+                  <MenuItem mnemonicParsing="false" text="Save" />
                         <MenuItem mnemonicParsing="false" onAction="#exitSuccess" text="Exit" />
                     </items>
                 </Menu>
-            <Menu mnemonicParsing="false" text="Edit">
-              <items>
-                <MenuItem mnemonicParsing="false" onAction="#openProxyConfiguration" text="Proxy Configuration" />
-              </items>
-            </Menu>
+                <Menu mnemonicParsing="false" text="Edit">
+                    <items>
+                        <MenuItem mnemonicParsing="false" onAction="#openProxyConfiguration" text="Proxy Configuration" />
+                    </items>
+                </Menu>
                 <Menu mnemonicParsing="false" text="Tools">
                     <items>
                         <MenuItem mnemonicParsing="false" onAction="#openBase64EncodeDecode" text="Base64 encode/decode" />
-                  <MenuItem mnemonicParsing="false" onAction="#openCommonHeaders" text="Common Headers" />
+                        <MenuItem mnemonicParsing="false" onAction="#openCommonHeaders" text="Common Headers" />
                     </items>
                 </Menu>
                 <Menu mnemonicParsing="false" text="Help">

@@ -132,7 +132,7 @@ public class HeadersController extends HeaderManagerController {
     public void addSelectedHeaders () {
         final ObservableList<TreeItem<CommonHeader>> selectedItems = commonHeadersTable.getSelectionModel().getSelectedItems();
         for (TreeItem<CommonHeader> treeitem: selectedItems) {
-            setHeaderForm(treeitem.getValue().getExample());
+            appendHeaderForm(treeitem.getValue().getExample());
         }
     }
 }

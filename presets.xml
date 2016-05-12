@@ -1,4 +1,4 @@
-<save>
+<savedpresets>
     <session>
         <name><![CDATA[My title]]></name>
         <url><![CDATA[http://aaa/bbb/ccc]]></url>
@@ -13,4 +13,4 @@
         <headers><![CDATA[http://aaa/bbb/ccc]]></headers>
         <body><![CDATA[{a:"a"<<>}]]></body>
     </session>
-</save>
+</savedpresets>

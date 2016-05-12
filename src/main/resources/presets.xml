@@ -1,0 +1,16 @@
+<savedpresets>
+    <session>
+        <name><![CDATA[My title]]></name>
+        <url><![CDATA[http://aaa/bbb/ccc]]></url>
+        <method>POST</method>
+        <headers><![CDATA[http://aaa/bbb/ccc]]></headers>
+        <body><![CDATA[{a:"a"<<>}]]></body>
+    </session>
+    <session>
+        <name><![CDATA[My title2]]></name>
+        <url><![CDATA[http://aaa/bbb/ccc]]></url>
+        <method>POST</method>
+        <headers><![CDATA[http://aaa/bbb/ccc]]></headers>
+        <body><![CDATA[{a:"a"<<>}]]></body>
+    </session>
+</savedpresets>
