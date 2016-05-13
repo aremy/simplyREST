@@ -16,7 +16,7 @@
 
 <GridPane fx:id="rootPane" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.aremy.simplyREST.Controller">
     <!--    <fx:define>
-            <fx:include fx:id="base64encoder" source="base64encoder.fxml"/>
+            <fx:include fx:id="base64encoder" source="popup_base64encoder.fxml"/>
         </fx:define>-->
     <columnConstraints>
         <ColumnConstraints />
@@ -97,7 +97,7 @@
                 <Menu mnemonicParsing="false" text="File">
                     <items>
                   <MenuItem mnemonicParsing="false" onAction="#openLoadPresets" text="Load" />
-                  <MenuItem mnemonicParsing="false" text="Save" />
+                  <MenuItem mnemonicParsing="false" onAction="#openSavePresets" text="Save" />
                         <MenuItem mnemonicParsing="false" onAction="#exitSuccess" text="Exit" />
                     </items>
                 </Menu>
