@@ -1,9 +1,7 @@
 package com.aremy.simplyREST.headerManagers;
 
 import javafx.fxml.FXML;
-import javafx.scene.control.TextArea;
-import javafx.scene.control.TextField;
-import javafx.scene.control.TextInputControl;
+import javafx.scene.control.*;
 import javafx.stage.Stage;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -11,11 +9,13 @@ import org.slf4j.LoggerFactory;
 public abstract class HeaderManagerController {
     @FXML protected Stage dialogStage;
 
-    private TextArea headerField;
+    protected TextArea headerField;
 
-    private TextField urlField;
+    protected TextField urlField;
 
-    private TextArea bodyField;
+    protected TextArea bodyField;
+
+    protected ChoiceBox methodField;
 
 
     private final Logger slf4jLogger = LoggerFactory.getLogger(HeaderManagerController.class);
@@ -29,6 +29,10 @@ public abstract class HeaderManagerController {
     public void setBodyField(TextArea bodyField) {
         this.bodyField = bodyField;
     }
+    public void setMethodField(ChoiceBox methodField) {
+        this.methodField = methodField;
+    }
+
 
     public void setDialogStage(Stage dialogStage) {
         this.dialogStage = dialogStage;
@@ -65,4 +69,7 @@ public abstract class HeaderManagerController {
         }
     }
 
+    public void setMethodForm(String methodForm) {
+        methodField.getSelectionModel().select(methodForm);
+    }
 }

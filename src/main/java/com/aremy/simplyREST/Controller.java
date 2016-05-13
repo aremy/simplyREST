@@ -4,7 +4,6 @@ import com.aremy.simplyREST.headerManagers.HeaderManagerController;
 import com.aremy.simplyREST.objects.PropertiesManager;
 import com.sun.javafx.scene.control.skin.TextAreaSkin;
 import com.sun.javafx.scene.control.skin.TextFieldSkin;
-import com.sun.org.apache.xpath.internal.operations.Number;
 import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
@@ -70,7 +69,7 @@ public class Controller {
             .build();
     */
 
-    private Stage openPoup(String title, String fxmlResource) {
+    private Stage openPopup(String title, String fxmlResource) {
         final Stage dialogStage = new Stage();
         try {
             FXMLLoader loader = new FXMLLoader();
@@ -96,6 +95,7 @@ public class Controller {
             controller.setUrlField(url);
             controller.setHeaderField(httpHeader);
             controller.setBodyField(httpBody);
+            controller.setMethodField(httpMethod);
             dialogStage.showAndWait();
 
         } catch (IOException e) {
@@ -105,19 +105,23 @@ public class Controller {
     }
 
     public void openBase64EncodeDecode() {
-        openPoup("Generate Authorization Header", "/fxml/base64encoder.fxml");
+        openPopup("Generate Authorization Header", "/fxml/popup_base64encoder.fxml");
     }
 
     public void openCommonHeaders() {
-        openPoup("Common headers description & samples", "/fxml/headers.fxml");
+        openPopup("Common headers description & samples", "/fxml/popup_commonheaders.fxml");
     }
 
     public void openProxyConfiguration() {
-        openPoup("Proxy Configuration", "/fxml/properties.fxml");
+        openPopup("Proxy Configuration", "/fxml/popup_proxyproperties.fxml");
     }
 
     public void openLoadPresets() {
-        openPoup("Load Presets", "/fxml/loadpopup.fxml");
+        openPopup("Load Presets", "/fxml/popup_loadpresets.fxml");
+    }
+
+    public void openSavePresets() {
+        openPopup("Save Presets", "/fxml/popup_savepresets.fxml");
     }
 
     /**

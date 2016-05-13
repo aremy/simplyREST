@@ -6,20 +6,22 @@ import org.slf4j.LoggerFactory;
 
 import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBException;
+import javax.xml.bind.Marshaller;
 import javax.xml.bind.Unmarshaller;
 import java.io.File;
+import java.util.ArrayList;
 import java.util.List;
 
 public class PresetsManager {
-
+    static private PresetsManager _instance = null;
     private static final Logger slf4jLogger = LoggerFactory.getLogger(PresetsManager.class);
     private static final String PRESETS_FILE_NAME = "presets.xml";
 
-    public List<Savedpresets.Session> getSessionList() {
-        return sessionList;
-    }
+    public static List<Savedpresets.Session> sessionList;
 
-    public List<Savedpresets.Session> sessionList;
+/*    public List<Savedpresets.Session> getSessionList() {
+        return sessionList;
+    }  */
 
     public PresetsManager() {
         File propertiesFile = new File(PRESETS_FILE_NAME);
@@ -35,48 +37,33 @@ public class PresetsManager {
             proxyPort = wrapper.getProxy().getPort();
             proxyLogin = wrapper.getProxy().getLogin();
             proxyPassword = wrapper.getProxy().getPassword();*/
-            } // catches ANY exception
-            catch (JAXBException e) {
+            } catch (JAXBException e) {
                 e.printStackTrace();
                 slf4jLogger.error("Error while loading presets");
             }
         }
     }
-/*
-    static public PresetsManager instance(){
-        return instance(new File(PROPERTIES_FILE_NAME));
-    }
 
-    static public PresetsManager instance(File propertiesFile){
+    static public PresetsManager instance(){
         if (_instance == null) {
-            _instance = new PresetsManager(propertiesFile);
+            _instance = new PresetsManager();
         }
         return _instance;
     }
-*/
-    /*
+
     public static void save() {
         try {
             JAXBContext context = JAXBContext
-                    .newInstance(Properties.class);
+                    .newInstance(Savedpresets.class);
             Marshaller m = context.createMarshaller();
             m.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, true);
-
-            Properties wrapper = new Properties();
-
-            Properties.Proxy proxyProperties = new Properties.Proxy();
-            proxyProperties.setHost(proxyHost);
-
-            proxyProperties.setPort(proxyPort);
-            proxyProperties.setLogin(proxyLogin);
-            proxyProperties.setPassword(proxyPassword);
-            wrapper.setProxy(proxyProperties);
+            Savedpresets wrapper = new Savedpresets();
+            wrapper.getSession().addAll(sessionList);
 
             // Marshalling and saving XML to the file.
-            m.marshal(wrapper, new File(PROPERTIES_FILE_NAME));
+            m.marshal(wrapper, new File(PRESETS_FILE_NAME));
         } catch (JAXBException e) {
             slf4jLogger.error("Error while loading properties");
         }
     }
-    */
 }

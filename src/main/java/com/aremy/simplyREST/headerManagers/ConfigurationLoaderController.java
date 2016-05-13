@@ -26,8 +26,8 @@ public class ConfigurationLoaderController extends HeaderManagerController {
 
     @FXML
     private void initialize() {
-        PresetsManager presetsManager = new PresetsManager();
-        List<Savedpresets.Session> savedSessions = presetsManager.getSessionList();
+        PresetsManager presetsManager = PresetsManager.instance();
+        List<Savedpresets.Session> savedSessions = presetsManager.sessionList;
 
         if (savedSessions != null) {
             presetList.setItems(FXCollections.observableList(savedSessions));
@@ -49,7 +49,6 @@ public class ConfigurationLoaderController extends HeaderManagerController {
                 return cell;
             }
         });
-
 
         presetList.getSelectionModel().selectedItemProperty().addListener(new ChangeListener<Savedpresets.Session>() {
             @Override
@@ -76,7 +75,9 @@ public class ConfigurationLoaderController extends HeaderManagerController {
             setHeaderForm(selectedItem.getHeaders());
             setUrlForm(selectedItem.getUrl());
             setBodyForm(selectedItem.getBody());
+            setMethodForm(selectedItem.getMethod());
         }
         dialogStage.close();
     }
+
 }

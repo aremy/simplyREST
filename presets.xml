@@ -1,16 +1,60 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
 <savedpresets>
     <session>
-        <name><![CDATA[My title]]></name>
-        <url><![CDATA[http://aaa/bbb/ccc]]></url>
+        <name>My title</name>
+        <url>http://aaa/bbb/ccc</url>
         <method>POST</method>
-        <headers><![CDATA[http://aaa/bbb/ccc]]></headers>
-        <body><![CDATA[{a:"a"<<>}]]></body>
+        <headers>http://aaa/bbb/ccc</headers>
+        <body>{a:"a"&lt;&lt;&gt;}</body>
     </session>
     <session>
-        <name><![CDATA[My title2]]></name>
-        <url><![CDATA[http://aaa/bbb/ccc]]></url>
+        <name>My title2</name>
+        <url>http://aaa/bbb/ccc</url>
         <method>POST</method>
-        <headers><![CDATA[http://aaa/bbb/ccc]]></headers>
-        <body><![CDATA[{a:"a"<<>}]]></body>
+        <headers>http://aaa/bbb/ccc</headers>
+        <body>{a:"a"&lt;&lt;&gt;}</body>
+    </session>
+    <session>
+        <name>tets</name>
+        <url>test.com</url>
+        <headers>a:a</headers>
+        <body>xxx
+xxzezaer
+azeaz
+aze
+az
+eaz
+e
+az
+eazez</body>
+    </session>
+    <session>
+        <name>a</name>
+        <url>test.com</url>
+        <headers>a:a</headers>
+        <body>xxx
+xxzezaer
+azeaz
+aze
+az
+eaz
+e
+az
+eazez</body>
+    </session>
+    <session>
+        <name>sssss</name>
+        <url>test.com</url>
+        <method>PUT</method>
+        <headers>a:a</headers>
+        <body>xxx
+xxzezaer
+azeaz
+aze
+az
+eaz
+e
+az
+eazez</body>
     </session>
 </savedpresets>
