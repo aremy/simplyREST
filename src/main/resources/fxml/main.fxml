@@ -27,6 +27,7 @@
         <RowConstraints maxHeight="25.0" minHeight="25.0" prefHeight="25.0" vgrow="SOMETIMES" />
         <RowConstraints maxHeight="35.0" minHeight="35.0" prefHeight="35.0" vgrow="SOMETIMES" />
         <RowConstraints maxHeight="100.0" minHeight="100.0" prefHeight="100.0" vgrow="SOMETIMES" />
+      <RowConstraints maxHeight="20.0" minHeight="20.0" prefHeight="20.0" vgrow="SOMETIMES" />
         <RowConstraints maxHeight="28.0" minHeight="28.0" prefHeight="28.0" vgrow="SOMETIMES" />
         <RowConstraints maxHeight="1.7976931348623157E308" minHeight="300.0" prefHeight="300.0" vgrow="SOMETIMES" />
     </rowConstraints>
@@ -53,7 +54,7 @@
                 </Tab>
             </tabs>
         </TabPane>
-        <TextField fx:id="httpReturnCode" editable="false" focusTraversable="false" layoutY="395.0" prefHeight="25.0" prefWidth="390.0" promptText="HTTP Answer Code" GridPane.columnIndex="1" GridPane.rowIndex="3">
+        <TextField fx:id="httpReturnCode" editable="false" focusTraversable="false" layoutY="395.0" prefHeight="25.0" prefWidth="390.0" promptText="HTTP Answer Code" GridPane.columnIndex="1" GridPane.rowIndex="4">
             <GridPane.margin>
                 <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
             </GridPane.margin>
@@ -119,7 +120,7 @@
                 </Menu>
             </menus>
         </MenuBar>
-        <TabPane prefHeight="200.0" prefWidth="200.0" tabClosingPolicy="UNAVAILABLE" GridPane.columnIndex="1" GridPane.rowIndex="4">
+        <TabPane prefHeight="200.0" prefWidth="200.0" tabClosingPolicy="UNAVAILABLE" GridPane.columnIndex="1" GridPane.rowIndex="5">
             <tabs>
                 <Tab text="Headers">
                     <content>
@@ -133,5 +134,14 @@
                 </Tab>
             </tabs>
         </TabPane>
+      <AnchorPane GridPane.columnIndex="1" GridPane.rowIndex="3">
+         <children>
+            <ProgressBar fx:id="progressBar" progress="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" GridPane.columnIndex="1" GridPane.rowIndex="3">
+               <GridPane.margin>
+                  <Insets />
+               </GridPane.margin>
+            </ProgressBar>
+         </children>
+      </AnchorPane>
     </children>
 </GridPane>

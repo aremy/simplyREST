@@ -1,5 +1,6 @@
 package com.aremy.simplyREST;
 
+import com.aremy.simplyREST.connectivity.ConnectionThread;
 import com.aremy.simplyREST.headerManagers.HeaderManagerController;
 import com.aremy.simplyREST.objects.PropertiesManager;
 import com.sun.javafx.scene.control.skin.TextAreaSkin;
@@ -10,7 +11,7 @@ import javafx.fxml.FXMLLoader;
 import javafx.scene.Node;
 import javafx.scene.Scene;
 import javafx.scene.control.ChoiceBox;
-import javafx.scene.control.ProgressIndicator;
+import javafx.scene.control.ProgressBar;
 import javafx.scene.control.TextArea;
 import javafx.scene.control.TextField;
 import javafx.scene.image.Image;
@@ -27,20 +28,35 @@ import org.apache.http.client.CredentialsProvider;
 import org.apache.http.client.config.RequestConfig;
 import org.apache.http.client.entity.UrlEncodedFormEntity;
 import org.apache.http.client.methods.*;
+import org.apache.http.client.protocol.HttpClientContext;
+import org.apache.http.concurrent.FutureCallback;
+import org.apache.http.entity.BasicHttpEntity;
 import org.apache.http.entity.StringEntity;
 import org.apache.http.impl.client.BasicCredentialsProvider;
 import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.impl.client.HttpClients;
+import org.apache.http.impl.nio.client.CloseableHttpAsyncClient;
+import org.apache.http.impl.nio.client.HttpAsyncClients;
 import org.apache.http.message.BasicNameValuePair;
+import org.apache.http.nio.IOControl;
+import org.apache.http.nio.client.methods.AsyncCharConsumer;
+import org.apache.http.nio.client.methods.HttpAsyncMethods;
+import org.apache.http.nio.protocol.HttpAsyncRequestProducer;
+import org.apache.http.protocol.HttpContext;
 import org.apache.http.util.EntityUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.awt.*;
+import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.StringWriter;
 import java.io.UnsupportedEncodingException;
+import java.nio.CharBuffer;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.CountDownLatch;
+import java.util.concurrent.Future;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -53,9 +69,11 @@ public class Controller {
     @FXML private TextField httpReturnCode;
     @FXML private TextArea httpAnswerHeaders;
     @FXML private TextArea httpAnswerBody;
-    @FXML private ProgressIndicator downloadProgress;
+    @FXML private ProgressBar progressBar;
 
     @FXML private GridPane rootPane;
+
+    private ConnectionThread connectionThread;
 
     private final Logger slf4jLogger = LoggerFactory.getLogger(Controller.class);
 
@@ -129,6 +147,7 @@ public class Controller {
      */
     public void triggerApiCall() {
         // ProgressBar.INDETERMINATE_PROGRESS
+        progressBar.setProgress(0);
         httpAnswerBody.setText("");
         String targetUrl = url.getText();
         // prepend https:// if url does not start with http, https or ftp
@@ -196,140 +215,105 @@ public class Controller {
         }
     }
 
-    private String triggerHttpGet(String targetUrl, List<NameValuePair> headers) throws IOException {
-        CloseableHttpResponse response = null;
-        try {
-            String result;
-            //CloseableHttpClient httpclient = HttpClients.createDefault();
-            CloseableHttpClient httpclient = HttpClients.createDefault();
-            HttpGet httpGet = new HttpGet(targetUrl);
-            RequestConfig config = getProxyConfig();
-            if (config!= null)
-                httpGet.setConfig(config);
-                setProxyAuth(httpclient);
-            for (NameValuePair pair : headers) {
-                httpGet.setHeader(pair.getName(), pair.getValue());
-            }
-            response = httpclient.execute(httpGet);
-            result = handleHttpResponse(response);
-            return result;
-        } finally {
-            if (response != null)
-                response.close();
+    private void triggerHttpGet(String targetUrl, List<NameValuePair> headers) throws IOException {
+        CloseableHttpAsyncClient httpclient = HttpAsyncClients.createDefault();
+        httpclient.start();
+
+        final HttpGet httpGet = new HttpGet(targetUrl);
+        RequestConfig config = getProxyConfig();
+        if (config!= null)
+            httpGet.setConfig(config);
+        setProxyAuth(httpclient);
+        for (NameValuePair pair : headers) {
+            httpGet.setHeader(pair.getName(), pair.getValue());
         }
+        initiateThread(httpclient, httpGet);
     }
 
     // head, trace, option, connect
-    private String triggerHttpHead(String targetUrl, List<NameValuePair> headers) throws IOException {
-        CloseableHttpResponse response = null;
-        try {
-            String result;
-            CloseableHttpClient httpclient = HttpClients.createDefault();
-            HttpHead httpHead = new HttpHead(targetUrl);
-            RequestConfig config = getProxyConfig();
-            if (config!= null)
-                httpHead.setConfig(config);
-            setProxyAuth(httpclient);
-            for (NameValuePair pair : headers) {
-                httpHead.setHeader(pair.getName(), pair.getValue());
-            }
-            response = httpclient.execute(httpHead);
-            result = handleHttpResponse(response);
-            return result;
-        } finally {
-            if (response != null)
-                response.close();
+    private void triggerHttpHead(String targetUrl, List<NameValuePair> headers) throws IOException {
+        CloseableHttpAsyncClient httpclient = HttpAsyncClients.createDefault();
+        httpclient.start();
+
+        HttpHead httpHead = new HttpHead(targetUrl);
+        RequestConfig config = getProxyConfig();
+        if (config!= null)
+            httpHead.setConfig(config);
+        setProxyAuth(httpclient);
+        for (NameValuePair pair : headers) {
+            httpHead.setHeader(pair.getName(), pair.getValue());
         }
+        initiateThread(httpclient, httpHead);
     }
 
     // head, trace, option, connect
-    private String triggerHttpOptions(String targetUrl, List<NameValuePair> headers) throws IOException {
-        CloseableHttpResponse response = null;
-        try {
-            String result;
-            CloseableHttpClient httpclient = HttpClients.createDefault();
-            HttpOptions httpOptions = new HttpOptions(targetUrl);
-            RequestConfig config = getProxyConfig();
-            if (config!= null)
-                httpOptions.setConfig(config);
-            setProxyAuth(httpclient);
-            for (NameValuePair pair : headers) {
-                httpOptions.setHeader(pair.getName(), pair.getValue());
-            }
-            response = httpclient.execute(httpOptions);
-            result = handleHttpResponse(response);
-            return result;
-        } finally {
-            if (response != null)
-                response.close();
+    private void triggerHttpOptions(String targetUrl, List<NameValuePair> headers) throws IOException {
+        CloseableHttpAsyncClient httpclient = HttpAsyncClients.createDefault();
+        httpclient.start();
+        HttpOptions httpOptions = new HttpOptions(targetUrl);
+        RequestConfig config = getProxyConfig();
+        if (config!= null)
+            httpOptions.setConfig(config);
+        setProxyAuth(httpclient);
+        for (NameValuePair pair : headers) {
+            httpOptions.setHeader(pair.getName(), pair.getValue());
         }
+        initiateThread(httpclient,httpOptions);
     }
 
-    private String triggerHttpTrace(String targetUrl, List<NameValuePair> headers) throws IOException {
-        CloseableHttpResponse response = null;
-        try {
-            String result;
-            CloseableHttpClient httpclient = HttpClients.createDefault();
-            HttpTrace httpTrace = new HttpTrace(targetUrl);
-            RequestConfig config = getProxyConfig();
-            if (config!= null)
-                httpTrace.setConfig(config);
-            setProxyAuth(httpclient);
-            for (NameValuePair pair : headers) {
-                httpTrace.setHeader(pair.getName(), pair.getValue());
-            }
-            response = httpclient.execute(httpTrace);
-            result = handleHttpResponse(response);
-            return result;
-        } finally {
-            if (response != null)
-                response.close();
+    private void triggerHttpTrace(String targetUrl, List<NameValuePair> headers) throws IOException {
+        CloseableHttpAsyncClient httpclient = HttpAsyncClients.createDefault();
+        httpclient.start();
+        HttpTrace httpTrace = new HttpTrace(targetUrl);
+        RequestConfig config = getProxyConfig();
+        if (config!= null)
+            httpTrace.setConfig(config);
+        setProxyAuth(httpclient);
+        for (NameValuePair pair : headers) {
+            httpTrace.setHeader(pair.getName(), pair.getValue());
         }
+        initiateThread(httpclient,httpTrace);
     }
 
-    private String triggerHttpDelete(String targetUrl, List<NameValuePair> headers) throws IOException {
-        CloseableHttpResponse response = null;
-        try {
-            String result;
-            CloseableHttpClient httpclient = HttpClients.createDefault();
-            HttpDelete httpDelete = new HttpDelete(targetUrl);
-            RequestConfig config = getProxyConfig();
-            if (config!= null)
-                httpDelete.setConfig(config);
-                setProxyAuth(httpclient);
-            for (NameValuePair pair: headers) {
-                httpDelete.setHeader(pair.getName(), pair.getValue());
-            }
-            response = httpclient.execute(httpDelete);
-            result = handleHttpResponse(response);
-            return result;
-        } finally {
-            if (response != null)
-                response.close();
+    private void triggerHttpDelete(String targetUrl, List<NameValuePair> headers) throws IOException {
+        CloseableHttpAsyncClient httpclient = HttpAsyncClients.createDefault();
+        httpclient.start();
+        HttpDelete httpDelete = new HttpDelete(targetUrl);
+        RequestConfig config = getProxyConfig();
+        if (config!= null)
+            httpDelete.setConfig(config);
+        setProxyAuth(httpclient);
+        for (NameValuePair pair: headers) {
+            httpDelete.setHeader(pair.getName(), pair.getValue());
         }
+        initiateThread(httpclient, httpDelete);
     }
 
-    private String triggerHttpPostPut(HttpEntityEnclosingRequestBase httpPutPost, List<NameValuePair> headers, String targetBody) throws IOException {
-        CloseableHttpResponse response = null;
-        try {
-            String result;
-            CloseableHttpClient httpclient = HttpClients.createDefault();
-            for (NameValuePair pair: headers) {
-                httpPutPost.setHeader(pair.getName(), pair.getValue());
-            }
-            RequestConfig config = getProxyConfig();
-            if (config!= null)
-                httpPutPost.setConfig(config);
-                setProxyAuth(httpclient);
-            httpPutPost.setEntity(new StringEntity(targetBody));
-            httpPutPost.setEntity(new UrlEncodedFormEntity(headers));
-            response = httpclient.execute(httpPutPost);
-            result = handleHttpResponse(response);
-            return result;
-        } finally {
-            if (response != null)
-                response.close();
+    private void triggerHttpPostPut(HttpEntityEnclosingRequestBase httpPutPost, List<NameValuePair> headers, String targetBody) throws IOException {
+        CloseableHttpAsyncClient httpclient = HttpAsyncClients.createDefault();
+        httpclient.start();
+        for (NameValuePair pair: headers) {
+            httpPutPost.setHeader(pair.getName(), pair.getValue());
         }
+        RequestConfig config = getProxyConfig();
+        if (config!= null)
+            httpPutPost.setConfig(config);
+        setProxyAuth(httpclient);
+        httpPutPost.setEntity(new StringEntity(targetBody));
+        httpPutPost.setEntity(new UrlEncodedFormEntity(headers));
+        initiateThread(httpclient,httpPutPost);
+    }
+
+    private void initiateThread(CloseableHttpAsyncClient httpclient, HttpRequestBase httpRequest) {
+        if (connectionThread != null && !connectionThread.isInterrupted()) {
+            connectionThread.interrupt();
+        }
+        connectionThread = new ConnectionThread(httpclient, httpRequest,
+                httpReturnCode,
+                httpAnswerHeaders,
+                httpAnswerBody,
+                progressBar);
+        connectionThread.start();
     }
 
     private RequestConfig getProxyConfig() {
@@ -348,19 +332,36 @@ public class Controller {
         return result;
     }
 
+    private CloseableHttpAsyncClient setProxyAuth(CloseableHttpAsyncClient httpClient) {
+        CredentialsProvider basicCredentialsProvider = null;
+        PropertiesManager propertiesManager = PropertiesManager.instance();
+        if (propertiesManager.proxyLogin != null && !"".equals(propertiesManager.proxyLogin)) {
+            try {
+                basicCredentialsProvider = new BasicCredentialsProvider();
+                basicCredentialsProvider.setCredentials(
+                        new AuthScope(propertiesManager.proxyHost, Short.valueOf(propertiesManager.proxyPort)),
+                        new UsernamePasswordCredentials(propertiesManager.proxyLogin, propertiesManager.proxyPassword));
+                httpClient = HttpAsyncClients.custom().setDefaultCredentialsProvider(basicCredentialsProvider).build();
+            } catch (NumberFormatException e) {
+                //
+            }
+        }
+        return httpClient;
+    }
+
     private CloseableHttpClient setProxyAuth(CloseableHttpClient httpClient) {
         CredentialsProvider basicCredentialsProvider = null;
         PropertiesManager propertiesManager = PropertiesManager.instance();
         if (propertiesManager.proxyLogin != null && !"".equals(propertiesManager.proxyLogin)) {
-          try {
-              basicCredentialsProvider = new BasicCredentialsProvider();
-              basicCredentialsProvider.setCredentials(
-                      new AuthScope(propertiesManager.proxyHost, Short.valueOf(propertiesManager.proxyPort)),
-                      new UsernamePasswordCredentials(propertiesManager.proxyLogin, propertiesManager.proxyPassword));
-              httpClient = HttpClients.custom().setDefaultCredentialsProvider(basicCredentialsProvider).build();
-          } catch (NumberFormatException e) {
-              //
-          }
+            try {
+                basicCredentialsProvider = new BasicCredentialsProvider();
+                basicCredentialsProvider.setCredentials(
+                        new AuthScope(propertiesManager.proxyHost, Short.valueOf(propertiesManager.proxyPort)),
+                        new UsernamePasswordCredentials(propertiesManager.proxyLogin, propertiesManager.proxyPassword));
+                httpClient = HttpClients.custom().setDefaultCredentialsProvider(basicCredentialsProvider).build();
+            } catch (NumberFormatException e) {
+                //
+            }
         }
         return httpClient;
     }
@@ -372,7 +373,7 @@ public class Controller {
      * @return The body of the answer
      * @throws IOException
      */
-    private String handleHttpResponse(CloseableHttpResponse response) throws IOException {
+    private String handleHttpResponse(HttpResponse response) throws IOException {
         String result = "";
         httpReturnCode.setText(response.getStatusLine().toString());
         HttpEntity entity1 = response.getEntity();
