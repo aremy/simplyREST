@@ -11,13 +11,28 @@
 			<description>Character sets that are acceptable</description>
 			<example>Accept-Charset: utf-8</example>
 		</header>
-	</category>
-	<category name="Other standard headers">
 		<header>
 			<name>Accept-Encoding</name>
 			<description>List of acceptable encodings. See HTTP compression.</description>
 			<example>Accept-Encoding: gzip, deflate</example>
 		</header>
+		<header>
+			<name>Authorization</name>
+			<description>Authentication credentials for HTTP authentication</description>
+			<example>Authorization: Basic QWxhZGRpbjpvcGVuIHNlc2FtZQ==</example>
+		</header>
+		<header>
+			<name>Content-Type</name>
+			<description>The MIME type of the body of the request (used with POST and PUT requests)</description>
+			<example>Content-Type: application/x-www-form-urlencoded</example>
+		</header>
+		<header>
+			<name>User-Agent</name>
+			<description>The user agent string of the user agent</description>
+			<example>User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:12.0) Gecko/20100101 Firefox/21.0</example>
+		</header>
+	</category>
+	<category name="Other standard headers">
 		<header>
 			<name>Accept-Language</name>
 			<description>List of acceptable human languages for response. See Content negotiation.</description>
@@ -27,11 +42,6 @@
 			<name>Accept-Datetime</name>
 			<description>Acceptable version in time</description>
 			<example>Accept-Datetime: Thu, 31 May 2007 20:35:00 GMT</example>
-		</header>
-		<header>
-			<name>Authorization</name>
-			<description>Authentication credentials for HTTP authentication</description>
-			<example>Authorization: Basic QWxhZGRpbjpvcGVuIHNlc2FtZQ==</example>
 		</header>
 		<header>
 			<name>Cache-Control</name>
@@ -57,11 +67,6 @@
 			<name>Content-MD5</name>
 			<description>A Base64-encoded binary MD5 sum of the content of the request body</description>
 			<example>Content-MD5: Q2hlY2sgSW50ZWdyaXR5IQ==</example>
-		</header>
-		<header>
-			<name>Content-Type</name>
-			<description>The MIME type of the body of the request (used with POST and PUT requests)</description>
-			<example>Content-Type: application/x-www-form-urlencoded</example>
 		</header>
 		<header>
 			<name>Date</name>
@@ -148,11 +153,7 @@
 			<description>The transfer encodings the user agent is willing to accept: the same values as for the response header field Transfer-Encoding can be used, plus the "trailers" value (related to the "chunked" transfer method) to notify the server it expects to receive additional fields in the trailer after the last, zero-sized, chunk.</description>
 			<example>TE: trailers, deflate</example>
 		</header>
-		<header>
-			<name>User-Agent</name>
-			<description>The user agent string of the user agent</description>
-			<example>User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:12.0) Gecko/20100101 Firefox/21.0</example>
-		</header>
+
 		<header>
 			<name>Upgrade</name>
 			<description>Ask the server to upgrade to another protocol.</description>

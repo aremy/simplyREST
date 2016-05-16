@@ -28,9 +28,6 @@ import org.apache.http.client.CredentialsProvider;
 import org.apache.http.client.config.RequestConfig;
 import org.apache.http.client.entity.UrlEncodedFormEntity;
 import org.apache.http.client.methods.*;
-import org.apache.http.client.protocol.HttpClientContext;
-import org.apache.http.concurrent.FutureCallback;
-import org.apache.http.entity.BasicHttpEntity;
 import org.apache.http.entity.StringEntity;
 import org.apache.http.impl.client.BasicCredentialsProvider;
 import org.apache.http.impl.client.CloseableHttpClient;
@@ -38,25 +35,15 @@ import org.apache.http.impl.client.HttpClients;
 import org.apache.http.impl.nio.client.CloseableHttpAsyncClient;
 import org.apache.http.impl.nio.client.HttpAsyncClients;
 import org.apache.http.message.BasicNameValuePair;
-import org.apache.http.nio.IOControl;
-import org.apache.http.nio.client.methods.AsyncCharConsumer;
-import org.apache.http.nio.client.methods.HttpAsyncMethods;
-import org.apache.http.nio.protocol.HttpAsyncRequestProducer;
-import org.apache.http.protocol.HttpContext;
 import org.apache.http.util.EntityUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.awt.*;
-import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.StringWriter;
 import java.io.UnsupportedEncodingException;
-import java.nio.CharBuffer;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.concurrent.CountDownLatch;
-import java.util.concurrent.Future;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -80,12 +67,6 @@ public class Controller {
     public void exitSuccess() {
         System.exit(0);
     }
-
-
-    /*RequestConfig config = RequestConfig.custom()
-            .setProxy(proxy)
-            .build();
-    */
 
     private Stage openPopup(String title, String fxmlResource) {
         final Stage dialogStage = new Stage();
@@ -364,52 +345,6 @@ public class Controller {
             }
         }
         return httpClient;
-    }
-
-    /**
-     * Sets the response code, header, body in the form
-     *
-     * @param response The response of the request
-     * @return The body of the answer
-     * @throws IOException
-     */
-    private String handleHttpResponse(HttpResponse response) throws IOException {
-        String result = "";
-        httpReturnCode.setText(response.getStatusLine().toString());
-        HttpEntity entity1 = response.getEntity();
-        String headers = "";
-        for (Header header: response.getAllHeaders()) {
-            headers += header.getName() + ": " + header.getValue() + "\n";
-        }
-
-        StringWriter writer = new StringWriter();
-        IOUtils.copy(entity1.getContent(), writer, getCharsetFromContentType(response.getFirstHeader("Content-Type").getValue()));
-        result = writer.toString();
-        EntityUtils.consume(entity1);
-
-        httpAnswerHeaders.setText(headers);
-        httpAnswerBody.setText(result);
-
-        return result;
-    }
-
-    /**
-     * Extracts the character encoding (UTF-8, isoXXX) from the "Content-Type" http header
-     *
-     * @param contentType The value of a "Content-Type" http header
-     * @return The character encoding if available, null otherwise
-     */
-    private String getCharsetFromContentType(String contentType) {
-        Pattern charsetPattern = Pattern.compile("(?i)\\bcharset=\\s*\"?([^\\s;\"]*)");
-        String result = "UTF-8";
-        if (contentType == null)
-            return null;
-
-        Matcher m = charsetPattern.matcher(contentType);
-        if (m.find()) {
-            result = m.group(1).trim().toUpperCase();
-        }
-        return result;
     }
 
     /**
