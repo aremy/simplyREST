@@ -22,6 +22,8 @@ public class PropertiesManager {
     public static String proxyLogin;
     public static String proxyPassword;
 
+    public static String defaultPath;
+
     /**
      * Loads proxy properties
      */
@@ -35,6 +37,11 @@ public class PropertiesManager {
             proxyPort = wrapper.getProxy().getPort();
             proxyLogin = wrapper.getProxy().getLogin();
             proxyPassword = wrapper.getProxy().getPassword();
+            defaultPath = wrapper.getGeneral().getDefaultPath();
+            if (defaultPath == null || defaultPath.isEmpty())
+                defaultPath = System.getProperty("user.home");
+            //
+
         } // catches ANY exception
         catch (JAXBException e) {
             slf4jLogger.error("Error while loading properties");
@@ -68,6 +75,9 @@ public class PropertiesManager {
             proxyProperties.setLogin(proxyLogin);
             proxyProperties.setPassword(proxyPassword);
             wrapper.setProxy(proxyProperties);
+            Properties.General generalProperties = new Properties.General();
+            generalProperties.setDefaultPath(defaultPath);
+            wrapper.setGeneral(generalProperties);
 
             // Marshalling and saving XML to the file.
             m.marshal(wrapper, new File(PROPERTIES_FILE_NAME));

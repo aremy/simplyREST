@@ -1,4 +1,7 @@
 <properties>
+    <general>
+        <defaultPath>d:\projects</defaultPath>
+    </general>
     <proxy>
         <host>localhost</host>
         <port>3128</port>

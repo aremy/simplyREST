@@ -8,7 +8,7 @@ import static org.junit.Assert.assertEquals;
 
 public class PropertiesManagerTest {
     @Test
-    public void loadPersonDataFromFile() throws Exception {
+    public void loadPropertiesFromFile() throws Exception {
         ClassLoader classLoader = getClass().getClassLoader();
         File file = new File(classLoader.getResource("properties.xml").getFile());
         PropertiesManager propertiesManager = PropertiesManager.instance(file);

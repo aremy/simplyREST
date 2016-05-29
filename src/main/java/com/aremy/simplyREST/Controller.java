@@ -1,10 +1,12 @@
 package com.aremy.simplyREST;
 
-import com.aremy.simplyREST.connectivity.ConnectionThread;
+import com.aremy.simplyREST.connectivity.ConnectionTask;
 import com.aremy.simplyREST.headerManagers.HeaderManagerController;
 import com.aremy.simplyREST.objects.PropertiesManager;
 import com.sun.javafx.scene.control.skin.TextAreaSkin;
 import com.sun.javafx.scene.control.skin.TextFieldSkin;
+import javafx.concurrent.Task;
+import javafx.concurrent.WorkerStateEvent;
 import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
@@ -18,8 +20,10 @@ import javafx.scene.image.Image;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyEvent;
 import javafx.scene.layout.GridPane;
+import javafx.stage.FileChooser;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
+import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.io.IOUtils;
 import org.apache.http.*;
 import org.apache.http.auth.AuthScope;
@@ -28,6 +32,7 @@ import org.apache.http.client.CredentialsProvider;
 import org.apache.http.client.config.RequestConfig;
 import org.apache.http.client.entity.UrlEncodedFormEntity;
 import org.apache.http.client.methods.*;
+import org.apache.http.entity.ContentType;
 import org.apache.http.entity.StringEntity;
 import org.apache.http.impl.client.BasicCredentialsProvider;
 import org.apache.http.impl.client.CloseableHttpClient;
@@ -39,13 +44,14 @@ import org.apache.http.util.EntityUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.io.File;
 import java.io.IOException;
 import java.io.StringWriter;
 import java.io.UnsupportedEncodingException;
+import java.nio.file.Files;
+import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 public class Controller {
     @FXML private TextField url;
@@ -60,7 +66,7 @@ public class Controller {
 
     @FXML private GridPane rootPane;
 
-    private ConnectionThread connectionThread;
+    private Thread connectionThread;
 
     private final Logger slf4jLogger = LoggerFactory.getLogger(Controller.class);
 
@@ -128,7 +134,7 @@ public class Controller {
      */
     public void triggerApiCall() {
         // ProgressBar.INDETERMINATE_PROGRESS
-        progressBar.setProgress(0);
+        progressBar.progressProperty().unbind();
         httpAnswerBody.setText("");
         String targetUrl = url.getText();
         // prepend https:// if url does not start with http, https or ftp
@@ -286,22 +292,114 @@ public class Controller {
     }
 
     private void initiateThread(CloseableHttpAsyncClient httpclient, HttpRequestBase httpRequest) {
+        Task<HttpResponse> connectionTask = new ConnectionTask(httpclient, httpRequest);
+        //connectionTask.setUrl("http://google.com");
+        connectionTask.setOnSucceeded(new EventHandler<WorkerStateEvent>() {
+            @Override
+            public void handle(WorkerStateEvent t) {
+                handleHttpResponse((HttpResponse)t.getSource().getValue());
+            }
+        });
+
+        connectionTask.setOnCancelled(new EventHandler<WorkerStateEvent>() {
+            @Override
+            public void handle(WorkerStateEvent t) {
+                System.out.println("cancelled");
+            }
+        });
+        connectionTask.setOnFailed(new EventHandler<WorkerStateEvent>() {
+            @Override
+            public void handle(WorkerStateEvent t) {
+                System.out.println("failed");
+            }
+        });
+
         if (connectionThread != null && !connectionThread.isInterrupted()) {
             connectionThread.interrupt();
         }
-        connectionThread = new ConnectionThread(httpclient, httpRequest,
-                httpReturnCode,
-                httpAnswerHeaders,
-                httpAnswerBody,
-                progressBar);
+        progressBar.progressProperty().bind(connectionTask.progressProperty());
+        connectionThread = new Thread(connectionTask);
         connectionThread.start();
+    }
+
+    private String getMimeType(HttpEntity entity) {
+        ContentType contentType = ContentType.getOrDefault(entity);
+        String mimeType = contentType.getMimeType();
+        return mimeType;
+    }
+    /**
+     * Sets the response code, header, body in the form
+     *
+     * @param response The response of the request
+     * @return The body of the answer
+     * @throws IOException
+     */
+    private void handleHttpResponse(HttpResponse response) {
+        String result = "";
+        String contentType = getMimeType(response.getEntity());
+
+        httpReturnCode.setText(response.getStatusLine().toString());
+        HttpEntity entity1 = response.getEntity();
+        String headers = "";
+        for (Header header: response.getAllHeaders()) {
+            headers += header.getName() + ": " + header.getValue() + "\n";
+        }
+        /**
+            application
+            audio
+            example
+            image
+            message
+            model
+            multipart
+            text
+            video
+         */
+        if (!contentType.startsWith("text") && !contentType.startsWith("message")) {
+            PropertiesManager propertiesManager = PropertiesManager.instance();
+
+
+            FileChooser fileChooser = new FileChooser();
+            //fileChooser.setInitialDirectory(new File(System.getProperty("user.home")));
+            fileChooser.setInitialDirectory(new File(propertiesManager.defaultPath));
+
+            fileChooser.setInitialFileName(FilenameUtils.getBaseName(url.getText()) + "." + FilenameUtils.getExtension(url.getText()));
+            File selectedFile = fileChooser.showSaveDialog(rootPane.getScene().getWindow());
+
+
+            try {
+                if (selectedFile != null) {
+
+                    slf4jLogger.info("{}", selectedFile.getParent());
+                    Files.write(Paths.get(selectedFile.toURI()), IOUtils.toByteArray(entity1.getContent()));
+                    httpAnswerBody.setText("Saved file to " + selectedFile.getParent());
+                    propertiesManager.defaultPath = selectedFile.getParent();
+                }
+            } catch (IOException e) {
+                httpAnswerBody.setText("Error while saving file to " + selectedFile.getName());
+                e.printStackTrace();
+            }
+        } else {
+            try {
+                StringWriter writer = new StringWriter();
+                IOUtils.copy(entity1.getContent(), writer, ConnectionTask.getCharsetFromContentType(response.getFirstHeader("Content-Type").getValue()));
+                result = writer.toString();
+                EntityUtils.consume(entity1);
+            } catch (IOException e) {
+                headers = "Error";
+                result = "Error";
+            }
+            httpAnswerBody.setText(result);
+        }
+        httpAnswerHeaders.setText(headers);
+
     }
 
     private RequestConfig getProxyConfig() {
         RequestConfig result = null;
         PropertiesManager propertiesManager = PropertiesManager.instance();
 
-        // scheme
+        // TODO: customize scheme
         try {
             HttpHost proxy = new HttpHost(propertiesManager.proxyHost, Short.valueOf(propertiesManager.proxyPort), "http");
             result = RequestConfig.custom()

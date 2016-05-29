@@ -57,4 +57,11 @@ e
 az
 eazez</body>
     </session>
+    <session>
+        <name>xxxx</name>
+        <url>http://aaa/bbb/ccc</url>
+        <method>POST</method>
+        <headers>http://aaa/bbb/ccc</headers>
+        <body>{a:"a"&lt;&lt;&gt;}</body>
+    </session>
 </savedpresets>
